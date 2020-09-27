@@ -7,10 +7,11 @@
 #include <cstring>
 #include <string>
 #include <string.h>
+#include <unistd.h>
 
 
 #include "functions.h"
-#define BUFFERSIZE 1024
+
 
 int main(int argc, char** argv)
 {
@@ -36,15 +37,29 @@ int main(int argc, char** argv)
 
 
     char buffer[BUFFERSIZE];
-    strcpy(buffer, "hello world\0");
+    //strcpy(buffer, "hello world\0");
     
     socklen_t addrlen = sizeof(struct sockaddr_in);
+    std::cout << "listening on port " << argv[1] << std::endl;
     while(true)
     {
         int clientSD = accept(sd, (struct sockaddr*)&clientaddress, &addrlen);
         if (clientSD > 0)
         {
-            send(clientSD, buffer, strlen(buffer), 0);
+            int size = recv(clientSD, buffer, BUFFERSIZE - 1, 0);
+            buffer[size] = '\0';
+            std::cout << size << std::endl;
+            std::string msg = buffer;
+            std::cout << msg << std::endl;
+
+            size = recv(clientSD, buffer, BUFFERSIZE - 1, 0);
+            buffer[size] = '\0';
+            std::cout << size << std::endl;
+            msg = buffer;
+            std::cout << msg << std::endl;
+
+            std::cout << "" << std::endl;
+            //write(clientSD, buffer, strlen(buffer));
         }
     }
 }

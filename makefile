@@ -8,12 +8,12 @@ client: client.o client.class.o functions.o
 	$(COMPILER) $(FLAGS) functions.o client.o client.class.o -o client
 
 server: server.o server.class.o functions.o
-	$(COMPILER) $(FLAGS) functions.o server.o -o server
+	$(COMPILER) $(FLAGS) functions.o server.o server.class.o -o server
 
 client.o: client.cpp
 	$(COMPILER) $(FLAGS) -c client.cpp
 
-client.class.o: client.class.cpp
+client.class.o:	client.class.cpp
 	$(COMPILER) $(FLAGS) -c client.class.cpp
 
 server.o: server.cpp
