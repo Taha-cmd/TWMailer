@@ -8,6 +8,7 @@
 #include <string>
 #include <string.h>
 #include <unistd.h>
+#include <fcntl.h>
 
 
 #include "functions.h"
@@ -40,25 +41,29 @@ int main(int argc, char** argv)
     //strcpy(buffer, "hello world\0");
     
     socklen_t addrlen = sizeof(struct sockaddr_in);
+    long sdFlags;
+    int size;
+
     std::cout << "listening on port " << argv[1] << std::endl;
     while(true)
     {
-        int clientSD = accept(sd, (struct sockaddr*)&clientaddress, &addrlen);
-        if (clientSD > 0)
+        int newSocket = accept(sd, (struct sockaddr*)&clientaddress, &addrlen);
+        if (newSocket > 0)
         {
-            int size = recv(clientSD, buffer, BUFFERSIZE - 1, 0);
-            buffer[size] = '\0';
-            std::cout << size << std::endl;
-            std::string msg = buffer;
-            std::cout << msg << std::endl;
+            sdFlags = fcntl( newSocket, F_GETFL );
+            sdFlags |= O_NONBLOCK;
+            fcntl( newSocket, F_SETFL, sdFlags );
+            std::string msg = "";
 
-            size = recv(clientSD, buffer, BUFFERSIZE - 1, 0);
-            buffer[size] = '\0';
-            std::cout << size << std::endl;
-            msg = buffer;
+            do
+            {
+                size = recv(newSocket, buffer, BUFFERSIZE - 1, 0);
+                std::cout << size << std::endl;
+                buffer[size] = '\0';
+                msg.append(buffer);
+            } while ( size > 0);
+            
             std::cout << msg << std::endl;
-
-            std::cout << "" << std::endl;
             //write(clientSD, buffer, strlen(buffer));
         }
     }

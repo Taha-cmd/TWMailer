@@ -13,7 +13,6 @@
 
 int main(int argc, char** argv)
 {
-
     if(argc != 3)
         error_and_die("usage: client <ip4> <port>");
 
