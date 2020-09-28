@@ -20,6 +20,7 @@ class Client {
         virtual ~Client();
 
         bool isConnected() const { return connected; };
+        
         void connectToServer(const std::string&, const std::string&);
         std::string read();
         void sendMessage(const std::string&);

@@ -41,14 +41,6 @@ std::string Client::read()
         return "";
 
     std::string response = "";
-    /*while( (recv(sd, buffer, BUFFERSIZE - 1, 0) > 0) this code will block
-        need non blocking I/O
-    {
-        std::cout << size << std::endl;
-        buffer[BUFFERSIZE - 1] = '\0';
-        response.append(buffer);
-    } */
-
     if( recv(sd, buffer, BUFFERSIZE - 1, 0) > 0){
         response.append(buffer);
         response.append("\0");
@@ -65,17 +57,5 @@ void Client::sendMessage(const std::string& message)
     if(!this->connected)
         return;
 
-    int bytesSent = 0;
-    int bytesLeft = message.size();
-    int n = 0;
-
-    while(bytesLeft > 0)
-    {
-        n = send( sd, message.data() + bytesSent, bytesLeft, 0 );
-        if( n == -1)
-            error_and_die("error sending message to server");
-
-        bytesSent += n;
-        bytesLeft -= n;
-    }
+    sendNBytes(sd, message, message.size());
 }

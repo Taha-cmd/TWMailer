@@ -50,7 +50,7 @@ int main(int argc, char** argv)
         int newSocket = accept(sd, (struct sockaddr*)&clientaddress, &addrlen);
         if (newSocket > 0)
         {
-            sdFlags = fcntl( newSocket, F_GETFL );
+            /*sdFlags = fcntl( newSocket, F_GETFL );
             sdFlags |= O_NONBLOCK;
             fcntl( newSocket, F_SETFL, sdFlags );
             std::string msg = "";
@@ -61,9 +61,13 @@ int main(int argc, char** argv)
                 std::cout << size << std::endl;
                 buffer[size] = '\0';
                 msg.append(buffer);
-            } while ( size > 0);
-            
+            } while ( size > 0); */
+
+            std::string msg = readNBytesFromSocket(newSocket, 15);
             std::cout << msg << std::endl;
+            std::cout << readLine(msg) << std::endl;
+            
+            //std::cout << msg << std::endl;
             //write(clientSD, buffer, strlen(buffer));
         }
     }

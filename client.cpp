@@ -18,7 +18,9 @@ int main(int argc, char** argv)
 
     Client client(AF_INET, SOCK_STREAM, 0);
     client.connectToServer(argv[1], argv[2]);
-    client.sendMessage("hello server");
+    client.sendMessage("hello server\nfuckyouman\n");
+
+
 
     return 0;
 
