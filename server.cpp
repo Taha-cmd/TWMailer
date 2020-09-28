@@ -12,6 +12,7 @@
 
 
 #include "functions.h"
+#include "server.class.h"
 
 
 int main(int argc, char** argv)
@@ -20,36 +21,30 @@ int main(int argc, char** argv)
     if(argc != 2)
         error_and_die("usage server <port>");
 
-    int sd = socket(AF_INET, SOCK_STREAM, 0);
-    if(sd == -1)
-        error_and_die("error creating socket");
-
-    struct sockaddr_in address, clientaddress;
-
-    memset(&address, 0, sizeof(address));
-    address.sin_family = AF_INET;
-    address.sin_addr.s_addr = INADDR_ANY;
-    address.sin_port = htons(std::stoi(argv[1]));
-
-    if( ( bind(sd, (struct sockaddr*)&address, sizeof(address)) ) != 0)
-        error_and_die("error binding socket");
-
-    listen(sd, 5);
-
-
-    char buffer[BUFFERSIZE];
-    //strcpy(buffer, "hello world\0");
-    
-    socklen_t addrlen = sizeof(struct sockaddr_in);
-    long sdFlags;
-    int size;
+    Server server(AF_INET, SOCK_STREAM, 0);
+    server.start(argv[1], BACKLOG);
 
     std::cout << "listening on port " << argv[1] << std::endl;
     while(true)
     {
-        int newSocket = accept(sd, (struct sockaddr*)&clientaddress, &addrlen);
+        int newSocket = server.acceptClient();
         if (newSocket > 0)
         {
+            while(true)
+            {
+                int size = server.readBodySize(newSocket);
+                std::string command = server.readBody(newSocket, size);
+
+                std::cout << size << std::endl;
+                std::cout << command << std::endl;
+            }
+        }
+    }
+}
+
+            //std::cout << msg << std::endl;
+            //write(clientSD, buffer, strlen(buffer));
+
             /*sdFlags = fcntl( newSocket, F_GETFL );
             sdFlags |= O_NONBLOCK;
             fcntl( newSocket, F_SETFL, sdFlags );
@@ -62,13 +57,3 @@ int main(int argc, char** argv)
                 buffer[size] = '\0';
                 msg.append(buffer);
             } while ( size > 0); */
-
-            std::string msg = readNBytesFromSocket(newSocket, 15);
-            std::cout << msg << std::endl;
-            std::cout << readLine(msg) << std::endl;
-            
-            //std::cout << msg << std::endl;
-            //write(clientSD, buffer, strlen(buffer));
-        }
-    }
-}

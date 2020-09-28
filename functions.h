@@ -5,6 +5,7 @@
 
 
 #define BUFFERSIZE 1024
+#define BACKLOG 5
 
 
 void error_and_die(const std::string&);

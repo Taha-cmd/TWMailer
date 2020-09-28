@@ -57,5 +57,6 @@ void Client::sendMessage(const std::string& message)
     if(!this->connected)
         return;
 
+    sendNBytes(sd, std::to_string(message.size()) + "\n", message.size() + 1);
     sendNBytes(sd, message, message.size());
 }

@@ -18,9 +18,15 @@ int main(int argc, char** argv)
 
     Client client(AF_INET, SOCK_STREAM, 0);
     client.connectToServer(argv[1], argv[2]);
-    client.sendMessage("hello server\nfuckyouman\n");
+    
+    std::string command;
 
-
+    while(true)
+    {
+        std::cout << "enter a command: ";
+        std::getline(std::cin, command);
+        client.sendMessage(command);
+    }
 
     return 0;
 
