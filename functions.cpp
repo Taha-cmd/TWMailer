@@ -41,13 +41,9 @@ std::string readLineFromSocket(int sd)
 
             response.push_back(charachter);
         }
-        else if(size == 0)
+        else if(size == -1)
         {
-            break;
-        }
-        else
-        {
-            error_and_die("error reading charachters from socket");
+            error_and_die("error reading charachters from socket in readLineFromSocket()");
         }
     }
 
@@ -68,7 +64,7 @@ std::string readNBytesFromSocket(int socket, int size)
         n = read(socket, buffer + bytesRead, bytesLeft);
 
         if(bytesRead == -1)
-            error_and_die("error reading n bytes from socket");
+            error_and_die("error reading n bytes from socket in readNBytesFromSocket");
         
         bytesRead += n;
         bytesLeft -= n;
@@ -88,7 +84,7 @@ void sendNBytes(int socket, const std::string& payload, int size)
     {
         n = write( socket, payload.data() + bytesSent, bytesLeft);
         if( n == -1)
-            error_and_die("error sending message to server");
+            error_and_die("error sending message in sendNBytes()");
 
         bytesSent += n;
         bytesLeft -= n;

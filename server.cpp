@@ -28,32 +28,21 @@ int main(int argc, char** argv)
     while(true)
     {
         int newSocket = server.acceptClient();
+
+        // make this functionality in a thread
         if (newSocket > 0)
         {
             while(true)
             {
-                int size = server.readBodySize(newSocket);
-                std::string command = server.readBody(newSocket, size);
+                std::string command = server.readMessage(newSocket);
 
-                std::cout << size << std::endl;
                 std::cout << command << std::endl;
+                server.sendMessage(newSocket, command);
+                if(command == "quit"){
+                    break;
+                }
             }
         }
+        close(newSocket);
     }
 }
-
-            //std::cout << msg << std::endl;
-            //write(clientSD, buffer, strlen(buffer));
-
-            /*sdFlags = fcntl( newSocket, F_GETFL );
-            sdFlags |= O_NONBLOCK;
-            fcntl( newSocket, F_SETFL, sdFlags );
-            std::string msg = "";
-
-            do
-            {
-                size = recv(newSocket, buffer, BUFFERSIZE - 1, 0);
-                std::cout << size << std::endl;
-                buffer[size] = '\0';
-                msg.append(buffer);
-            } while ( size > 0); */

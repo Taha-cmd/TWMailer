@@ -23,10 +23,8 @@ class Server {
         
         void start(const std::string&, int);
         int acceptClient();
-
-        int readBodySize(int);
-        std::string readBody(int, int);
-        void sendMessage(const std::string&);
+        std::string readMessage(int);
+        void sendMessage(int, const std::string&);
 
 
      private:

@@ -26,6 +26,8 @@ int main(int argc, char** argv)
         std::cout << "enter a command: ";
         std::getline(std::cin, command);
         client.sendMessage(command);
+        std::string msg = client.readMessage();
+        std::cout << msg << std::endl;
     }
 
     return 0;

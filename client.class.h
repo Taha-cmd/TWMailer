@@ -22,7 +22,7 @@ class Client {
         bool isConnected() const { return connected; };
         
         void connectToServer(const std::string&, const std::string&);
-        std::string read();
+        std::string readMessage();
         void sendMessage(const std::string&);
 
 

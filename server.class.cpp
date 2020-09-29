@@ -15,6 +15,7 @@ Server::Server(int domain, int type, int protocol)
 Server::~Server()
 {
     close(sd);
+    std::cout << "out" << std::endl;
 }
 
 void Server::start(const std::string& port, int backlog)
@@ -36,16 +37,16 @@ int Server::acceptClient()
     return newSocket;
 }
 
-int Server::readBodySize(int socket)
-{
-    std::string bodySize = readLineFromSocket(socket);
 
-    return std::stoi(bodySize);
+std::string Server::readMessage(int socket)
+{
+    int size = std::stoi( readLineFromSocket(socket) );
+    std::string body = readNBytesFromSocket(socket, size);
+    return body;
 }
 
-std::string Server::readBody(int socket, int size)
+void Server::sendMessage(int socket, const std::string& message)
 {
-    std::string body = readNBytesFromSocket(socket, size);
-
-    return body;
+    sendNBytes(socket, std::to_string(message.size()) + "\n", message.size() + 1);
+    sendNBytes(socket, message, message.size());
 }

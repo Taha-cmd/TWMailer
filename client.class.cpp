@@ -34,22 +34,11 @@ void Client::connectToServer(const std::string& ip, const std::string& port)
 
 }
 
-std::string Client::read()
+std::string Client::readMessage()
 {
-
-    if(!this->connected)
-        return "";
-
-    std::string response = "";
-    if( recv(sd, buffer, BUFFERSIZE - 1, 0) > 0){
-        response.append(buffer);
-        response.append("\0");
-    } else {
-        error_and_die("error reading from socket");
-    }
-        
-    return response;
-
+    int size = std::stoi( readLineFromSocket(sd) );
+    std::string body = readNBytesFromSocket(sd, size);
+    return body;
 }
 
 void Client::sendMessage(const std::string& message)
