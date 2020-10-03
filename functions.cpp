@@ -63,8 +63,11 @@ std::string readNBytesFromSocket(int socket, int size)
     {
         n = read(socket, buffer + bytesRead, bytesLeft);
 
-        if(bytesRead == -1)
+        if(n == -1)
             error_and_die("error reading n bytes from socket in readNBytesFromSocket");
+
+        if(n == 0)
+            return "quit";
         
         bytesRead += n;
         bytesLeft -= n;

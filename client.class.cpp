@@ -12,7 +12,9 @@ Client::Client(int domain, int type, int protocol)
 
 Client::~Client()
 {
+    this->sendMessage("quit");
     close(sd);
+    std::cout << "out" << std::endl;
 }
 
 void Client::connectToServer(const std::string& ip, const std::string& port)
@@ -36,6 +38,9 @@ void Client::connectToServer(const std::string& ip, const std::string& port)
 
 std::string Client::readMessage()
 {
+    if(!this->connected)
+        return "";
+
     int size = std::stoi( readLineFromSocket(sd) );
     std::string body = readNBytesFromSocket(sd, size);
     return body;
@@ -46,6 +51,6 @@ void Client::sendMessage(const std::string& message)
     if(!this->connected)
         return;
 
-    sendNBytes(sd, std::to_string(message.size()) + "\n", message.size() + 1);
+    sendNBytes(sd, std::to_string(message.size()) + "\n", std::to_string( message.size() ).size() + 1);
     sendNBytes(sd, message, message.size());
 }

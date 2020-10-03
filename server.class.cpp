@@ -28,6 +28,7 @@ void Server::start(const std::string& port, int backlog)
         error_and_die("error binding socket");
 
     listen(sd, backlog);
+    listening = true;
 }
 
 int Server::acceptClient()
@@ -47,6 +48,6 @@ std::string Server::readMessage(int socket)
 
 void Server::sendMessage(int socket, const std::string& message)
 {
-    sendNBytes(socket, std::to_string(message.size()) + "\n", message.size() + 1);
+    sendNBytes(socket, std::to_string(message.size()) + "\n", std::to_string( message.size() ).size() + 1);
     sendNBytes(socket, message, message.size());
 }
