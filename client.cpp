@@ -11,44 +11,44 @@
 #include "functions.h"
 
 
-Client* client = nullptr;
-
-void cleanUp(int signal)
+void cleanUp(int placeholder, void* client)
 {
-    delete client;
-    exit(EXIT_SUCCESS);
+    (*(Client*)client).~Client();
 }
-
 
 int main(int argc, char** argv)
 {
     if(argc != 3)
         error_and_die("usage: client <ip4> <port>");
 
-    signal(SIGINT, cleanUp);
-    client = new Client(AF_INET, SOCK_STREAM, 0);
-    client->connectToServer(argv[1], argv[2]);
+
+    Client client(AF_INET, SOCK_STREAM, 0);
     
+    signal(SIGINT, exitProgram);
+
+    if( (on_exit(cleanUp, (void*)&client)) != 0 )
+        error_and_die("error registering exit handler");
+    
+    client.connectToServer(argv[1], argv[2]);
+
     std::string command;
 
     while(true)
     {
         std::cout << "enter a command: ";
         std::getline(std::cin, command);
-        client->sendMessage(command);
+        client.sendMessage(command);
 
-        if(command == "quit"){
+        if( lower(command) == "quit" ){
             break;
         }
     
-        std::string msg = client->readMessage();
+        std::string msg = client.readMessage();
         std::cout << msg.size() << std::endl;
         std::cout << msg << std::endl;
     }
 
-
-    delete client;
-    return 0;
+    exit(EXIT_SUCCESS);
 }
 
 

@@ -11,6 +11,11 @@
 #include <unistd.h>
 #include <cstring>
 #include <fcntl.h>
+#include <set>
+#include <thread>
+
+
+enum Command {Read, Delete, List, Quit};
 
 
 class Server {
@@ -26,6 +31,8 @@ class Server {
         std::string readMessage(int);
         void sendMessage(int, const std::string&);
 
+        void handleRequest(int);
+
 
      private:
          bool listening;
@@ -39,4 +46,5 @@ class Server {
          struct sockaddr_in serverIP;
          struct sockaddr_in clientIP;
          socklen_t addrlen;
+         std::set<std::string> commands = {"read", "list", "delete", "quit"};
 };

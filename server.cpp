@@ -10,57 +10,43 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <signal.h>
+#include <thread>
 
 
 #include "functions.h"
 #include "server.class.h"
 
-Server* server = nullptr;
 
-void cleanUp(int signal)
+void cleanUp(int placeholder, void* server)
 {
-    delete server;
-    exit(EXIT_SUCCESS);
+    (*(Server*)server).~Server();
 }
-
 
 int main(int argc, char** argv)
 {
 
     if(argc != 2)
         error_and_die("usage server <port>");
+    
+    Server server(AF_INET, SOCK_STREAM, 0);
 
+    signal(SIGINT, exitProgram);
 
-    signal(SIGINT, cleanUp);
-    server = new Server(AF_INET, SOCK_STREAM, 0);
-    server->start(argv[1], BACKLOG);
+    if( (on_exit(cleanUp, (void*)&server)) != 0 )
+        error_and_die("error registering exit handler");
+
+    server.start(argv[1], BACKLOG);
 
     std::cout << "listening on port " << argv[1] << std::endl;
     while(true)
     {
-        int newSocket = server->acceptClient();
-
-        // make this functionality in a thread
-        if (newSocket > 0)
-        {
-            while(true)
-            {
-                std::string command = server->readMessage(newSocket);
-
-                if(command == "quit"){
-                    std::cout << "client exited" << std::endl;
-                    break;
-                }
-
-                std::cout << command << std::endl;
-                std::cout << command.size() << std::endl;
-                server->sendMessage(newSocket, command);
-            }
-        }
-        close(newSocket);
+        int newSocket = server.acceptClient();
+        if(newSocket > 0){
+            std::thread requestHandler(&Server::handleRequest, &server, newSocket);
+            requestHandler.detach();
+        }         
     }
+    
 
-
-    delete server;
-    return 0;
+    exit(EXIT_SUCCESS);
 }

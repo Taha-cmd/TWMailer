@@ -1,6 +1,7 @@
 #include <iostream>
 #include <unistd.h>
 #include <string.h>
+#include <algorithm>
 
 void error_and_die(const std::string& errorMsg)
 {
@@ -8,10 +9,16 @@ void error_and_die(const std::string& errorMsg)
     exit(EXIT_FAILURE);
 }
 
+void exitProgram(int signal)
+{
+    std::cout << "exiting" << std::endl;
+    exit(EXIT_SUCCESS);
+}
+
 std::string readLine(std::string& message)
 {
     std::string line = "";
-    int index = 0;
+    size_t index = 0;
 
     for(; index < message.size(); index++)
     {
@@ -21,7 +28,12 @@ std::string readLine(std::string& message)
         line.push_back(message.at(index));
     }
 
-    message = message.substr(index + 1,  message.size() - ( index  + 1 ) );
+    try {
+        message = message.substr(index + 1);
+    } catch(...){
+
+    }
+    
     return line;
 }
 
@@ -67,7 +79,7 @@ std::string readNBytesFromSocket(int socket, int size)
             error_and_die("error reading n bytes from socket in readNBytesFromSocket");
 
         if(n == 0)
-            return "quit";
+            return "";
         
         bytesRead += n;
         bytesLeft -= n;
@@ -92,4 +104,13 @@ void sendNBytes(int socket, const std::string& payload, int size)
         bytesSent += n;
         bytesLeft -= n;
     }
+}
+
+std::string lower(std::string str)
+{
+    std::transform(str.begin(), str.end(), str.begin(), [](char c){
+        return tolower(c);
+    });
+
+    return str;
 }
