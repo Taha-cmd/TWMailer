@@ -14,8 +14,12 @@ Server::Server(int domain, int type, int protocol)
 
 Server::~Server()
 {
+    shutDown();
+}
+
+void Server::shutDown()
+{
     close(sd);
-    std::cout << "out" << std::endl;
 }
 
 void Server::start(const std::string& port, int backlog)
@@ -60,6 +64,11 @@ void Server::handleRequest(int socket)
     while(true)
     {
         std::string request = this->readMessage(socket);
+
+        //        std::cout << request << std::endl;
+        //std::cout << request.size() << std::endl;
+
+
         std::string command = lower( readLine(request) );
 
         if(commands.find(command) == commands.end()){
@@ -80,11 +89,12 @@ void Server::handleRequest(int socket)
 
         } else if( command == "delete" ){
 
+        } else if( command == "send" ){
+
         }
 
 
-        std::cout << request << std::endl;
-        std::cout << request.size() << std::endl;
+
         this->sendMessage(socket, request);
         std::cout << command << std::endl; 
     }

@@ -12,9 +12,13 @@ Client::Client(int domain, int type, int protocol)
 
 Client::~Client()
 {
+    shutDown();
+}
+
+void Client::shutDown()
+{
     this->sendMessage("quit");
     close(sd);
-    std::cout << "out" << std::endl;
 }
 
 void Client::connectToServer(const std::string& ip, const std::string& port)
