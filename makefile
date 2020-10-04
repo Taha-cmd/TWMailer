@@ -4,8 +4,8 @@ FLAGS=-Wall -pthread
 
 all: client server
 
-client: client.o client.class.o functions.o
-	$(COMPILER) $(FLAGS) functions.o client.o client.class.o -o client
+client: client.o client.class.o functions.o message.o
+	$(COMPILER) $(FLAGS) functions.o client.o client.class.o message.o -o client
 
 server: fileSystem.o server.o server.class.o functions.o
 	$(COMPILER) $(FLAGS) fileSystem.o functions.o server.o server.class.o -o server
@@ -28,5 +28,7 @@ fileSystem.o: fileSystem.cpp
 functions.o: functions.cpp
 	$(COMPILER) $(FLAGS) -c functions.cpp
 
+message.o: message.cpp
+	$(COMPILER) $(FLAGS) -c message.cpp
 clean:
 	rm *.o client server
