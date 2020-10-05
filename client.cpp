@@ -43,27 +43,34 @@ int main(int argc, char** argv)
         std::getline(std::cin, command);
         std::cout << "Entered command: " << command << std::endl;
         
-        if(lower(command) == "send")
+        try
         {
-            std::string sender, recipient, subject, message;
+            if(lower(command) == "send")
+            {
+                std::string sender, recipient, subject, message;
 
-            reader.ReadLineParameter("Sender", sender, 8);
-            reader.ReadLineParameter("Empfänger", recipient, 8);
-            reader.ReadLineParameter("Betreff", subject, 80);
-            reader.ReadTextParameter("Nachricht", message, 10000);
+                reader.ReadLineParameter("Sender", sender, 8);
+                reader.ReadLineParameter("Empfänger", recipient, 8);
+                reader.ReadLineParameter("Betreff", subject, 80);
+                reader.ReadTextParameter("Nachricht", message, 10000);
 
-            Message msg(sender, recipient, subject, message);
-            std::string sendRequest = "SEND\n";
-            sendRequest += msg.ToString();
+                Message msg(sender, recipient, subject, message);
+                std::string sendRequest = "SEND\n";
+                sendRequest += msg.ToString();
 
-            client.sendMessage(sendRequest);
+                client.sendMessage(sendRequest);
+            }
+            else if(lower(command) == "quit")
+                break;
+        
+            std::string msg = client.readMessage();
+            std::cout << msg.size() << std::endl;
+            std::cout << msg << std::endl;
         }
-        else if(lower(command) == "quit")
-            break;
-    
-        std::string msg = client.readMessage();
-        std::cout << msg.size() << std::endl;
-        std::cout << msg << std::endl;
+        catch(const ConfigReaderException& e)
+        {
+            std::cerr << e.what() << '\n';
+        }
     }
 
     exit(EXIT_SUCCESS);
