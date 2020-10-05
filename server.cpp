@@ -27,13 +27,7 @@ void cleanUp(int placeholder, void* server)
 int main(int argc, char** argv)
 {
 
-
-    FileSystem fs(".");
-    auto files = fs.getFiles(argv[1]);
-
-    for(auto file : files)
-        std::cout << file << std::endl;
-    /*if(argc != 2)
+    if(argc != 2)
         error_and_die("usage server <port>");
     
     Server server(AF_INET, SOCK_STREAM, 0);
@@ -53,7 +47,7 @@ int main(int argc, char** argv)
             std::thread requestHandler(&Server::handleRequest, &server, newSocket);
             requestHandler.detach();
         }         
-    } */
+    } 
     
 
     exit(EXIT_SUCCESS);
