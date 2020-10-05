@@ -5,11 +5,13 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <cstring>
-#include <signal.h>
+#include <stdexcept>
 
+#include <signal.h>
+#include "Infrastructure/configReader.h"
 #include "client.class.h"
 #include "functions.h"
-
+#include "message.h"
 
 void cleanUp(int placeholder, void* client)
 {
@@ -33,15 +35,31 @@ int main(int argc, char** argv)
 
     std::string command;
 
+    ConfigReader reader(std::cin);
+
     while(true)
     {
         std::cout << "enter a command: ";
         std::getline(std::cin, command);
-        client.sendMessage(command);
+        std::cout << "Entered command: " << command << std::endl;
+        
+        if(lower(command) == "send")
+        {
+            std::string sender, recipient, subject, message;
 
-        if( lower(command) == "quit" ){
-            break;
+            reader.ReadLineParameter("Sender", sender, 8);
+            reader.ReadLineParameter("Empfänger", recipient, 8);
+            reader.ReadLineParameter("Betreff", subject, 80);
+            reader.ReadTextParameter("Nachricht", message, 10000);
+
+            Message msg(sender, recipient, subject, message);
+            std::string sendRequest = "SEND\n";
+            sendRequest += msg.ToString();
+
+            client.sendMessage(sendRequest);
         }
+        else if(lower(command) == "quit")
+            break;
     
         std::string msg = client.readMessage();
         std::cout << msg.size() << std::endl;
@@ -50,5 +68,3 @@ int main(int argc, char** argv)
 
     exit(EXIT_SUCCESS);
 }
-
-

@@ -1,11 +1,12 @@
 COMPILER=g++
 FLAGS=-Wall -pthread
+INFRASTRUCTURE= configReader.o exceptionBase.o configReaderException.o
 
 
 all: client server
 
-client: client.o client.class.o functions.o message.o
-	$(COMPILER) $(FLAGS) functions.o client.o client.class.o message.o -o client
+client: client.o client.class.o functions.o message.o $(INFRASTRUCTURE)
+	$(COMPILER) $(FLAGS) functions.o client.o client.class.o message.o $(INFRASTRUCTURE) -o client
 
 server: fileSystem.o server.o server.class.o functions.o
 	$(COMPILER) $(FLAGS) fileSystem.o functions.o server.o server.class.o -o server
@@ -30,5 +31,15 @@ functions.o: functions.cpp
 
 message.o: message.cpp
 	$(COMPILER) $(FLAGS) -c message.cpp
+
+configReader.o: Infrastructure/configReader.cpp
+	$(COMPILER) $(FLAGS) -c Infrastructure/configReader.cpp
+
+exceptionBase.o: Infrastructure/exceptionBase.cpp
+	$(COMPILER) $(FLAGS) -c Infrastructure/exceptionBase.cpp
+
+configReaderException.o: Infrastructure/configReaderException.cpp
+	$(COMPILER) $(FLAGS) -c Infrastructure/configReaderException.cpp
+
 clean:
 	rm *.o client server

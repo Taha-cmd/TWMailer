@@ -46,5 +46,5 @@ class Server {
          struct sockaddr_in serverIP;
          struct sockaddr_in clientIP;
          socklen_t addrlen;
-         std::set<std::string> commands = {"read", "list", "delete", "quit"};
+         std::set<std::string> commands = {"send", "read", "list", "delete", "quit"};
 };

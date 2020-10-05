@@ -74,14 +74,22 @@ void Server::handleRequest(int socket)
 
 
             // handle commands, maybe write a function for each command
-        if( command == "read" ){
+        if(command == "send")
+        {
+            std::cout << "YAY" << std::endl;
+        }
+        else if( command == "read" )
+        {
 
-        } else if( command == "list" ){
+        } 
+        else if( command == "list" )
+        {
 
-        } else if( command == "delete" ){
+        } 
+        else if( command == "delete" )
+        {
 
         }
-
 
         std::cout << request << std::endl;
         std::cout << request.size() << std::endl;

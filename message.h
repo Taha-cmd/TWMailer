@@ -3,7 +3,6 @@
 
 
 class Message {
-
     public:
         std::string GetSender() { return sender; };
         std::string GetRecipient() { return recipient; };
@@ -15,6 +14,8 @@ class Message {
 
         std::string ToString();
     private:
+        Message();
+
         void Validate();
 
         std::string sender;
