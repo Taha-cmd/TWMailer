@@ -19,7 +19,7 @@
 
 void cleanUp(int placeholder, void* server)
 {
-    (*(Server*)server).~Server();
+    (*(Server*)server).shutDown();
 }
 
 int main(int argc, char** argv)

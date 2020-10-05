@@ -25,6 +25,7 @@ class Server {
         virtual ~Server();
 
         bool isListening() const { return listening; };
+        void shutDown();
         
         void start(const std::string&, int);
         int acceptClient();

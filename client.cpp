@@ -15,7 +15,7 @@
 
 void cleanUp(int placeholder, void* client)
 {
-    (*(Client*)client).~Client();
+    (*(Client*)client).shutDown();
 }
 
 int main(int argc, char** argv)
@@ -30,6 +30,7 @@ int main(int argc, char** argv)
 
     if( (on_exit(cleanUp, (void*)&client)) != 0 )
         error_and_die("error registering exit handler");
+
     
     client.connectToServer(argv[1], argv[2]);
 
