@@ -12,24 +12,28 @@ FileSystem::~FileSystem()
     
 }
 
+bool FileSystem::Exists(std::string path)
+{
+    path = combineWithRoot(path);
+    
+    struct stat attr;
+    return stat(path.data(), &attr) == 0;
+}
+
 bool FileSystem::isDir(std::string path)
 {
-    path = root + "/" + path;
-    path = realpath(path.data(), NULL);
-
-    struct stat attributes;
-    stat(path.data(), &attributes);
-    return static_cast<bool>(S_ISDIR(attributes.st_mode));
+    path = combineWithRoot(path);
+    
+    struct stat attr;
+    return stat(path.data(), &attr) == 0 && attr.st_mode & S_IFDIR;
 }
 
 bool FileSystem::isFile(std::string path)
 {
-    path = root + "/" + path;
-    path = realpath(path.data(), NULL);
-
-    struct stat attributes;
-    stat(path.data(), &attributes);
-    return static_cast<bool>(S_ISREG(attributes.st_mode));
+    path = combineWithRoot(path);
+    
+    struct stat attr;
+    return stat(path.data(), &attr) == 0 && attr.st_mode & S_IFREG;
 }
 
 void FileSystem::deleteFile(std::string path)
@@ -99,4 +103,9 @@ std::vector< std::string > FileSystem::getFiles(std::string path)
 
     closedir(dir);
     return files;
+}
+
+std::string FileSystem::combineWithRoot(std::string path)
+{
+    return root + "/" + path;
 }

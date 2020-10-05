@@ -15,8 +15,10 @@ class FileSystem {
         FileSystem(std::string);
         ~FileSystem();
 
+        bool Exists(std::string);
         bool isDir(std::string);
         bool isFile(std::string);
+
         void deleteFile(std::string);
         std::string createDir(std::string);
         void writeToFile(std::string, std::string);
@@ -27,6 +29,8 @@ class FileSystem {
 
 
     private:
+        std::string combineWithRoot(std::string);
+
         std::string root;
         
 

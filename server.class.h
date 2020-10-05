@@ -13,7 +13,7 @@
 #include <fcntl.h>
 #include <set>
 #include <thread>
-
+#include <unistd.h>
 
 enum Command {Read, Delete, List, Quit};
 

@@ -1,13 +1,13 @@
+#include <arpa/inet.h>
+#include <chrono>
+#include <errno.h>
 #include <iostream>
+#include <netinet/in.h>
 #include <sys/socket.h>
 #include <sys/types.h>
-#include <errno.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <cstring>
 #include <stdexcept>
-
 #include <signal.h>
+
 #include "Infrastructure/configReader.h"
 #include "client.class.h"
 #include "functions.h"
@@ -16,6 +16,11 @@
 void cleanUp(int placeholder, void* client)
 {
     (*(Client*)client).shutDown();
+}
+
+std::time_t getCurrentTime()
+{
+    return std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 }
 
 int main(int argc, char** argv)
@@ -46,6 +51,8 @@ int main(int argc, char** argv)
         
         try
         {
+            std::string sendRequest;
+
             if(lower(command) == "send")
             {
                 std::string sender, recipient, subject, message;
@@ -56,15 +63,21 @@ int main(int argc, char** argv)
                 reader.ReadTextParameter("Nachricht", message, 10000);
 
                 Message msg(sender, recipient, subject, message);
-                std::string sendRequest = "SEND\n";
+                sendRequest = "SEND\n";
                 sendRequest += msg.ToString();
-
-                client.sendMessage(sendRequest);
             }
             else if(lower(command) == "quit")
                 break;
-        
+            else
+                sendRequest = command;
+
+            std::cout << "Sending Request: [" << sendRequest << "] at " << getCurrentTime() << std::endl;
+            client.sendMessage(sendRequest);
+
+            std::cout << "Start waiting for Response, at " << getCurrentTime() << std::endl;
             std::string msg = client.readMessage();
+            std::cout << "Response received, at " << getCurrentTime() << std::endl;
+
             std::cout << msg.size() << std::endl;
             std::cout << msg << std::endl;
         }
