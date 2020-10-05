@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <errno.h>
@@ -15,6 +16,7 @@
 
 #include "functions.h"
 #include "server.class.h"
+#include "fileSystem.class.h"
 
 
 void cleanUp(int placeholder, void* server)
@@ -25,7 +27,13 @@ void cleanUp(int placeholder, void* server)
 int main(int argc, char** argv)
 {
 
-    if(argc != 2)
+
+    FileSystem fs(".");
+    auto files = fs.getFiles(argv[1]);
+
+    for(auto file : files)
+        std::cout << file << std::endl;
+    /*if(argc != 2)
         error_and_die("usage server <port>");
     
     Server server(AF_INET, SOCK_STREAM, 0);
@@ -45,7 +53,7 @@ int main(int argc, char** argv)
             std::thread requestHandler(&Server::handleRequest, &server, newSocket);
             requestHandler.detach();
         }         
-    }
+    } */
     
 
     exit(EXIT_SUCCESS);
