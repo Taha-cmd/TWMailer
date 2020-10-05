@@ -2,6 +2,11 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <sys/types.h>
+#include <dirent.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <ftw.h>
 
 
 class FileSystem {
@@ -10,21 +15,20 @@ class FileSystem {
         FileSystem(std::string);
         ~FileSystem();
 
-        static bool pathExists(std::string);
-        static bool isDir(std::string);
-
+        bool isDir(std::string);
         bool isFile(std::string);
-        bool deleteFile(std::string);
-        bool deleteDir(std::string, bool);
+        void deleteFile(std::string);
         std::string createDir(std::string);
-        std::string createFile(std::string);
-        void writeToFile(std::string);
+        void writeToFile(std::string, std::string);
         std::string readFile(std::string);
         std::vector<std::string> getFiles(std::string);
+
+        std::string getRootFolder() const { return this->root; }
 
 
     private:
         std::string root;
+        
 
 };
  

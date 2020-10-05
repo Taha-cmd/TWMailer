@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <errno.h>
@@ -15,6 +16,7 @@
 
 #include "functions.h"
 #include "server.class.h"
+#include "fileSystem.class.h"
 
 
 void cleanUp(int placeholder, void* server)
@@ -45,7 +47,7 @@ int main(int argc, char** argv)
             std::thread requestHandler(&Server::handleRequest, &server, newSocket);
             requestHandler.detach();
         }         
-    }
+    } 
     
 
     exit(EXIT_SUCCESS);
