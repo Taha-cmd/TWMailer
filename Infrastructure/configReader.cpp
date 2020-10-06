@@ -35,9 +35,9 @@ void ConfigReader::ReadTextParameter(const std::string& parameterName, std::stri
     
     while((index = temp.find(":wq")) == std::string::npos)
     {
-        std::string scheissCPP;
-        std::getline(this->inputStream, scheissCPP);
-        temp += scheissCPP + '\n';
+        std::string line;
+        std::getline(this->inputStream, line);
+        temp += line + '\n';
     }
 
     //std::cout << "[" << temp[index] << "]" << std::endl;

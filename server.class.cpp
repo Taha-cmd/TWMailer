@@ -13,16 +13,22 @@ Server::Server(int domain, int type, int protocol, const std::string& mailpool)
     memset( &clientIP, 0, sizeof(clientIP) );
 
     messageDb = new MessageRepository(FileSystem(mailpool));
+    messageHandler = new MessageHandler(*messageDb);
 }
 
 Server::~Server()
-{
+{    
     shutDown();
 }
 
 void Server::shutDown()
 {
-    delete messageDb;
+    if(messageDb != nullptr)
+        delete messageDb;
+
+    if(messageHandler != nullptr)
+        delete messageHandler;
+        
     close(sd);
 }
 
@@ -47,7 +53,6 @@ void Server::start(const std::string& port, int backlog)
     listen(sd, backlog);
     listening = true;
 
-    std::cout << "Establishing Message- Database." << std::endl;
     messageDb->Establish();
 }
 
@@ -57,7 +62,6 @@ int Server::acceptClient()
 
     return newSocket;
 }
-
 
 std::string Server::readMessage(int socket)
 {
@@ -75,55 +79,65 @@ void Server::sendMessage(int socket, const std::string& message)
 
 void Server::handleRequest(int socket)
 {
-    // here use readline function to parse the request
+    assert(messageDb != nullptr);
+    assert(messageHandler != nullptr);
 
     while(true)
     {
-        std::string request = this->readMessage(socket);
-        std::string command = lower( readLine(request) );
+        try
+        {
+            std::string request = this->readMessage(socket);
+            std::string response = request;
+            std::string command = lower(readLine(request));
 
-        if(commands.find(command) == commands.end()){
-            sendMessage(socket, "unknown command");
-            continue;
+            if (commands.find(command) == commands.end())
+            {
+                sendMessage(socket, "unknown command");
+                continue;
+            }
+
+            if (command == "quit")
+            {
+                std::cout << "client exited" << std::endl;
+                break;
+            }
+
+            if (command == "send")
+            {
+                std::cout << "Received Send Request" << std::endl;
+                response = messageHandler->HandleSendMessage(request);
+            }
+            else if (command == "read")
+            {
+            }
+            else if (command == "list")
+            {
+            }
+            else if (command == "delete")
+            {
+            }
+            else if (command == "send")
+            {
+            }
+
+            std::cout << request << std::endl;
+            std::cout << request.size() << std::endl;
+
+            this->sendMessage(socket, response);
+            std::cout << command << std::endl;
         }
-        
-        if(command == "quit"){
-            std::cout << "client exited" << std::endl;
-            break;
+        catch(const MessageHandlerException& msgEx )
+        {
+            std::cout << msgEx.what() << std::endl;
+            this->sendMessage(socket, msgEx.what());
         }
-
-
-            // handle commands, maybe write a function for each command
-        if(command == "send")
+        catch(const std::exception& e)
         {
-            std::cout << "Received Send Request" << std::endl;
-
-
-
+            std::cerr << "Unexpected Error: " << e.what() << '\n';
         }
-        else if( command == "read" )
-        {
-
-        } 
-        else if( command == "list" )
-        {
-
-        } 
-        else if( command == "delete" )
-        {
-
-        } 
-        else if( command == "send" )
-        {
-
-        }
-
-        std::cout << request << std::endl;
-        std::cout << request.size() << std::endl;
-
-        this->sendMessage(socket, request);
-        std::cout << command << std::endl; 
     }
 
     close(socket);
 }
+
+

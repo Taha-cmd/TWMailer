@@ -1,8 +1,11 @@
 #pragma once
- 
+
+#include <assert.h>
 #include <iostream>
 #include <string>
 #include "Database/messageRepository.h"
+#include "message.h"
+#include "messageHandler.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -15,6 +18,7 @@
 #include <thread>
 #include <unistd.h>
 
+#include <sstream>
 #include "Infrastructure/functions.h"
 
 enum Command {Read, Delete, List, Quit};
@@ -36,7 +40,6 @@ class Server {
 
         void handleRequest(int);
 
-
      private:
          bool listening;
          int sd;
@@ -51,6 +54,7 @@ class Server {
          socklen_t addrlen;
 
          MessageRepository* messageDb;
+         MessageHandler* messageHandler;
 
          std::set<std::string> commands = {"send", "read", "list", "delete", "quit"};
 };

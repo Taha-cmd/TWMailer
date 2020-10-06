@@ -47,10 +47,11 @@ void MessageRepository::Insert(const Message& message)
 
     int messageId = idGenerator->NextID();
 
-    std::string messageFilePath = recipient + "/" + std::to_string(messageId) + "txt";
+    std::string messageFilePath = databaseFolder + "/" + recipient + "/" + std::to_string(messageId) + ".txt";
 
-    if(!fileManager.Exists(messageFilePath))
-        throw MessageRepositoryException("Error inserting Message ID: " + std::to_string(messageId) + ". File already exists");
+    if(fileManager.Exists(messageFilePath))
+        throw new MessageRepositoryException("Error inserting Message ID: " + std::to_string(messageId) + ". File already exists");
     
+    std::cout << "Creating MessageEntry: " << messageFilePath << std::endl;
     fileManager.writeToFile(messageFilePath, message.ToString());
 }
