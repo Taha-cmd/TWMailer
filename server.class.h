@@ -1,8 +1,13 @@
 #pragma once
- 
+
+#include <assert.h>
 #include <iostream>
 #include <string>
+#include <sstream>
 #include "functions.h"
+#include "Database/messageRepository.h"
+#include "message.h"
+#include "messageHandler.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -13,7 +18,7 @@
 #include <fcntl.h>
 #include <set>
 #include <thread>
-
+#include <unistd.h>
 
 enum Command {Read, Delete, List, Quit};
 
@@ -34,7 +39,6 @@ class Server {
 
         void handleRequest(int);
 
-
      private:
          bool listening;
          int sd;
@@ -47,5 +51,9 @@ class Server {
          struct sockaddr_in serverIP;
          struct sockaddr_in clientIP;
          socklen_t addrlen;
-         std::set<std::string> commands = {"read", "list", "delete", "quit"};
+
+         MessageRepository* messageDb;
+         MessageHandler* messageHandler;
+
+         std::set<std::string> commands = {"send", "read", "list", "delete", "quit"};
 };

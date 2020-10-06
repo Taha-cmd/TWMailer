@@ -1,0 +1,6 @@
+*.o
+.vscode/
+.vscode/*
+client
+server
+MessageDatabase/
