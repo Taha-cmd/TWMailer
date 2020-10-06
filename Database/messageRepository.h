@@ -12,13 +12,13 @@
 class MessageRepository{
     public:
         MessageRepository(const FileSystem& fileManager);
+        MessageRepository() = delete;
         ~MessageRepository();
 
         void Establish();
 
         void Insert(const Message& message);
     private:
-        MessageRepository();
 
         const FileSystem& fileManager;
         IDGenerator* idGenerator;

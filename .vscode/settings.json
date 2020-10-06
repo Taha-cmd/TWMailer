@@ -49,6 +49,9 @@
         "string_view": "cpp",
         "utility": "cpp",
         "initializer_list": "cpp",
-        "thread": "cpp"
-    }
+        "thread": "cpp",
+        "condition_variable": "cpp",
+        "mutex": "cpp"
+    },
+    "C_Cpp.errorSquiggles": "Disabled"
 }

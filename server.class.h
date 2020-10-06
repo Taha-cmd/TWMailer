@@ -3,8 +3,6 @@
 #include <assert.h>
 #include <iostream>
 #include <string>
-#include <sstream>
-#include "functions.h"
 #include "Database/messageRepository.h"
 #include "message.h"
 #include "messageHandler.h"
@@ -20,13 +18,16 @@
 #include <thread>
 #include <unistd.h>
 
+#include <sstream>
+#include "Infrastructure/functions.h"
+
 enum Command {Read, Delete, List, Quit};
 
 
 class Server {
      public:
 
-        Server(int, int, int);
+        Server(int, int, int, const std::string&);
         virtual ~Server();
 
         bool isListening() const { return listening; };

@@ -28,8 +28,13 @@ void Client::connectToServer(const std::string& ip, const std::string& port)
 
     memset( &serverIP, 0, sizeof(serverIP) );
     serverIP.sin_family = domain;
-    serverIP.sin_port = htons(std::stoi(port));
 
+    try {
+        serverIP.sin_port = htons(std::stoi(port));
+    } catch(...){
+        error_and_die("error parsing port");
+    }
+    
     if( inet_aton(ip.data(), &serverIP.sin_addr) == 0 )
         error_and_die("error converting ip address");
 

@@ -2,7 +2,7 @@
 #include "server.class.h"
 
 
-Server::Server(int domain, int type, int protocol)
+Server::Server(int domain, int type, int protocol, const std::string& mailpool)
     :listening(false), sd(-1), domain(domain), type(type), protocol(protocol), addrlen(sizeof(struct sockaddr_in))
 {
     if ( (sd = socket(domain, type, protocol)) < 0)
@@ -12,23 +12,23 @@ Server::Server(int domain, int type, int protocol)
     memset( &serverIP, 0, sizeof(serverIP) );
     memset( &clientIP, 0, sizeof(clientIP) );
 
-    messageDb = new MessageRepository(FileSystem("."));
+    messageDb = new MessageRepository(FileSystem(mailpool));
     messageHandler = new MessageHandler(*messageDb);
 }
 
 Server::~Server()
+{    
+    shutDown();
+}
+
+void Server::shutDown()
 {
     if(messageDb != nullptr)
         delete messageDb;
 
     if(messageHandler != nullptr)
         delete messageHandler;
-    
-    shutDown();
-}
-
-void Server::shutDown()
-{
+        
     close(sd);
 }
 
@@ -39,7 +39,13 @@ void Server::start(const std::string& port, int backlog)
 
     serverIP.sin_family = domain;
     serverIP.sin_addr.s_addr = INADDR_ANY;
-    serverIP.sin_port = htons(std::stoi(port));
+    
+    try{
+        serverIP.sin_port = htons(std::stoi(port));
+    } catch(...) {
+        error_and_die("error parsing port");
+    }
+        
 
     if( ( bind(sd, (struct sockaddr*)&serverIP, sizeof(serverIP)) ) != 0)
         error_and_die("error binding socket");

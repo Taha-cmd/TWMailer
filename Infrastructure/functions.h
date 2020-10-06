@@ -2,6 +2,11 @@
 #define FUNCTIONS_H
  
 #include <string>
+#include <chrono>
+#include <iostream>
+#include <unistd.h>
+#include <string.h>
+#include <algorithm>
 
 
 #define BUFFERSIZE 1024
@@ -15,6 +20,7 @@ std::string readNBytesFromSocket(int,int);
 std::string lower(std::string);
 void sendNBytes(int,const std::string&,int);
 void exitProgram(int);
+std::time_t getCurrentTime();
 
 
 
