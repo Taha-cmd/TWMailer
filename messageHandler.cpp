@@ -44,3 +44,26 @@ std::string MessageHandler::HandleSendMessage(const std::string request)
 
     return "Message saved.";
 }
+
+std::string MessageHandler::ListMessages(const std::string& username)
+{   
+    //absender
+    //empfänger
+    //betreff
+    /* body */
+
+    int id = 1;
+    std::vector<std::string> messages = messageRepo.GetMessages(username);
+    std::string response = "total number of messages: " + std::to_string(messages.size()) + "\n";
+
+    for(auto msg : messages )
+    {
+        for(int i = 0; i < 2; i++)
+            readLine( msg );
+
+        response += "Betreff für Nachricht " + std::to_string(id) + ": " + readLine(msg) + "\n";
+        id++;
+    }
+
+    return response;
+}

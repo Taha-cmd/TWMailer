@@ -112,19 +112,15 @@ void Server::handleRequest(int socket)
             }
             else if (command == "list")
             {
+                std::string username = readLine( request );
+                response = messageHandler->ListMessages( username );
             }
             else if (command == "delete")
             {
             }
-            else if (command == "send")
-            {
-            }
-
-            std::cout << request << std::endl;
-            std::cout << request.size() << std::endl;
+            
 
             this->sendMessage(socket, response);
-            std::cout << command << std::endl;
         }
         catch(const MessageHandlerException& msgEx )
         {

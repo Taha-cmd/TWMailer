@@ -60,6 +60,16 @@ int main(int argc, char** argv)
                 sendRequest = "SEND\n";
                 sendRequest += msg.ToNetworkString();
             }
+            else if( lower(command) == "list" )
+            {
+                std::string username;
+
+                reader.ReadLineParameter("Username", username, 8);
+
+                sendRequest = "LIST\n";
+                sendRequest += username;
+
+            }
             else if(lower(command) == "quit")
                 break;
             else
@@ -69,11 +79,10 @@ int main(int argc, char** argv)
             client.sendMessage(sendRequest);
 
             std::cout << "Start waiting for Response, at " << getCurrentTime() << std::endl;
-            std::string msg = client.readMessage();
+            std::string response = client.readMessage();
+            std::cout << response << std::endl;
             std::cout << "Response received, at " << getCurrentTime() << std::endl;
 
-            std::cout << msg.size() << std::endl;
-            std::cout << msg << std::endl;
         }
         catch(const ConfigReaderException& e)
         {

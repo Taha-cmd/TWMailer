@@ -50,8 +50,26 @@ void MessageRepository::Insert(const Message& message)
     std::string messageFilePath = databaseFolder + "/" + recipient + "/" + std::to_string(messageId) + ".txt";
 
     if(fileManager.Exists(messageFilePath))
-        throw new MessageRepositoryException("Error inserting Message ID: " + std::to_string(messageId) + ". File already exists");
+        throw MessageRepositoryException("Error inserting Message ID: " + std::to_string(messageId) + ". File already exists");
     
     std::cout << "Creating MessageEntry: " << messageFilePath << std::endl;
     fileManager.writeToFile(messageFilePath, message.ToString());
+}
+
+std::vector< std::string > MessageRepository::GetMessages(const std::string& username)
+{
+    std::lock_guard<std::mutex> guard(this->fileAccessMutex);
+    std::vector<std::string> messages;
+
+    if(fileManager.Exists(databaseFolder + "/" + username))
+    {
+        auto files = fileManager.getFiles( databaseFolder + "/" + username );
+        messages.reserve(files.size());
+
+        for(auto path : files)
+            messages.emplace_back( fileManager.readFile( databaseFolder + "/" + username + "/" + path) );
+    }
+
+
+    return messages;
 }

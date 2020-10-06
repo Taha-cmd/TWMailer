@@ -28,7 +28,7 @@ class FileSystem {
         
         void writeToFile(std::string path, std::string content) const;
         std::string readFile(std::string) const;
-        std::vector<std::string> getFiles(std::string);
+        std::vector<std::string> getFiles(const std::string&) const;
 
         std::string getRootFolder() const { return this->root; }
 

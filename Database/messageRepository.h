@@ -18,6 +18,7 @@ class MessageRepository{
         void Establish();
 
         void Insert(const Message& message);
+        std::vector< std::string > GetMessages(const std::string& username);
     private:
 
         const FileSystem& fileManager;

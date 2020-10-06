@@ -69,10 +69,8 @@ std::string FileSystem::readFile(std::string path) const
     return content;
 }
 
-std::vector< std::string > FileSystem::getFiles(std::string path)
+std::vector< std::string > FileSystem::getFiles(const std::string& path) const
 {
-    path = combineWithRoot(path);
-    path = realpath(path.data(), NULL);
 
     struct dirent* entry;
     DIR* dir = opendir(path.data());
