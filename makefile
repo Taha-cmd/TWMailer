@@ -10,7 +10,7 @@ all: client server
 client: client.o client.class.o functions.o message.o $(INFRASTRUCTURE)
 	$(COMPILER) $(FLAGS) $^ -o $@
 
-server: fileSystem.o server.o server.class.o functions.o $(INFRASTRUCTURE) $(DATEBASE)
+server: fileSystem.o server.o server.class.o functions.o message.o messageHandler.o messageHandlerException.o $(INFRASTRUCTURE) $(DATEBASE)
 	$(COMPILER) $(FLAGS) $^ -o $@
 
 %.o: %.cpp 

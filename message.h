@@ -15,7 +15,8 @@ class Message {
         Message(std::string sender, std::string recipient, std::string subject, std::string message);
         ~Message();
 
-        std::string ToString() const { return sender + '\n' + recipient + '\n' + subject + "\n" + message + "\n.\n"; };
+        std::string ToString() const { return sender + '\n' + recipient + '\n' + subject + "\n" + message; };
+        std::string ToNetworkString() const { return ToString() + "\n.\n"; };
     private:
         Message();
 

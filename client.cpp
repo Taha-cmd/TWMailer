@@ -64,7 +64,7 @@ int main(int argc, char** argv)
 
                 Message msg(sender, recipient, subject, message);
                 sendRequest = "SEND\n";
-                sendRequest += msg.ToString();
+                sendRequest += msg.ToNetworkString();
             }
             else if(lower(command) == "quit")
                 break;
