@@ -15,6 +15,7 @@ class IDGenerator{
         std::string GetFileName() const { return fileName; };
 
         IDGenerator(std::string name, std::string workingDirectory, const FileSystem& fileManager);
+        IDGenerator() = delete;
         ~IDGenerator();
 
         void Establish();

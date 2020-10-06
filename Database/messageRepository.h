@@ -12,6 +12,7 @@
 class MessageRepository{
     public:
         MessageRepository(const FileSystem& fileManager);
+        MessageRepository() = delete;
         ~MessageRepository();
 
         void Establish();
