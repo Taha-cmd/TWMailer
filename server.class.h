@@ -2,7 +2,6 @@
  
 #include <iostream>
 #include <string>
-#include "functions.h"
 #include "Database/messageRepository.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -16,13 +15,15 @@
 #include <thread>
 #include <unistd.h>
 
+#include "Infrastructure/functions.h"
+
 enum Command {Read, Delete, List, Quit};
 
 
 class Server {
      public:
 
-        Server(int, int, int);
+        Server(int, int, int, const std::string&);
         virtual ~Server();
 
         bool isListening() const { return listening; };

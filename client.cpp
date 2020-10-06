@@ -1,5 +1,4 @@
 #include <arpa/inet.h>
-#include <chrono>
 #include <errno.h>
 #include <iostream>
 #include <netinet/in.h>
@@ -9,18 +8,13 @@
 #include <signal.h>
 
 #include "Infrastructure/configReader.h"
+#include "Infrastructure/functions.h"
 #include "client.class.h"
-#include "functions.h"
 #include "message.h"
 
 void cleanUp(int placeholder, void* client)
 {
     (*(Client*)client).shutDown();
-}
-
-std::time_t getCurrentTime()
-{
-    return std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 }
 
 int main(int argc, char** argv)

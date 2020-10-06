@@ -16,7 +16,6 @@ class ConfigReader{
         void ReadLineParameter(const std::string& parameterName, std::string& target, const std::size_t maxLength = std::numeric_limits<std::size_t>::max());
         void ReadTextParameter(const std::string& parameterName, std::string& target, const std::size_t maxLength = std::numeric_limits<std::size_t>::max());
     private:
-        ConfigReader();
 
         void PrintReadParameterInfo(const std::string& parameterName, const std::size_t maxLength);
 

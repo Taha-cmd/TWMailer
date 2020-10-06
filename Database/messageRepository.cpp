@@ -50,7 +50,7 @@ void MessageRepository::Insert(const Message& message)
     std::string messageFilePath = recipient + "/" + std::to_string(messageId) + "txt";
 
     if(!fileManager.Exists(messageFilePath))
-        throw new MessageRepositoryException("Error inserting Message ID: " + std::to_string(messageId) + ". File already exists");
+        throw MessageRepositoryException("Error inserting Message ID: " + std::to_string(messageId) + ". File already exists");
     
     fileManager.writeToFile(messageFilePath, message.ToString());
 }

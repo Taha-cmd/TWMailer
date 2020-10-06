@@ -5,6 +5,8 @@
 FileSystem::FileSystem(std::string root): root(root)
 {
 
+    if(!this->Exists(root))
+        this->createDir(root);
 }
 
 FileSystem::~FileSystem()
@@ -69,7 +71,7 @@ std::string FileSystem::readFile(std::string path) const
 
 std::vector< std::string > FileSystem::getFiles(std::string path)
 {
-    path = root + "/" + path;
+    path = combineWithRoot(path);
     path = realpath(path.data(), NULL);
 
     struct dirent* entry;

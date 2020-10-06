@@ -18,7 +18,6 @@ class MessageRepository{
 
         void Insert(const Message& message);
     private:
-        MessageRepository();
 
         const FileSystem& fileManager;
         IDGenerator* idGenerator;

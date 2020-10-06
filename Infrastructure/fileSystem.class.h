@@ -14,7 +14,6 @@
 class FileSystem {
 
     public:
-        std::string GetRoot() const { return root; };
 
         FileSystem(std::string root);
         ~FileSystem();
