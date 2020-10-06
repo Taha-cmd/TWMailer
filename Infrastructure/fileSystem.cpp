@@ -12,24 +12,22 @@ FileSystem::~FileSystem()
     
 }
 
-bool FileSystem::isDir(std::string path)
+bool FileSystem::Exists(std::string path) const
 {
-    path = root + "/" + path;
-    path = realpath(path.data(), NULL);
-
-    struct stat attributes;
-    stat(path.data(), &attributes);
-    return static_cast<bool>(S_ISDIR(attributes.st_mode));
+    struct stat attr;
+    return stat(path.data(), &attr) == 0;
 }
 
-bool FileSystem::isFile(std::string path)
+bool FileSystem::isDir(std::string path) const
 {
-    path = root + "/" + path;
-    path = realpath(path.data(), NULL);
+    struct stat attr;
+    return stat(path.data(), &attr) == 0 && attr.st_mode & S_IFDIR;
+}
 
-    struct stat attributes;
-    stat(path.data(), &attributes);
-    return static_cast<bool>(S_ISREG(attributes.st_mode));
+bool FileSystem::isFile(std::string path) const
+{
+    struct stat attr;
+    return stat(path.data(), &attr) == 0 && attr.st_mode & S_IFREG;
 }
 
 void FileSystem::deleteFile(std::string path)
@@ -39,28 +37,20 @@ void FileSystem::deleteFile(std::string path)
     remove(path.data());
 }
 
-std::string FileSystem::createDir(std::string path)
+int FileSystem::createDir(std::string path) const
 {
-    path = root + "/" + path;
-    path = realpath(path.data(), NULL);
-    mkdir(path.data(), 0777);
-
-    return path;
+    return mkdir(path.data(), 0777);
 }
 
-void FileSystem::writeToFile(std::string path, std::string content)
+void FileSystem::writeToFile(std::string path, std::string content) const
 {
-    path = root + "/" + path;
-    path = realpath(path.data(), NULL);
     std::ofstream newFile(path);
     newFile << content;
     newFile.close();
 }
 
-std::string FileSystem::readFile(std::string path)
+std::string FileSystem::readFile(std::string path) const
 {
-    path = root + "/" + path;
-    path = realpath(path.data(), NULL);
     std::string content;
     std::string line;
     std::ifstream targetFile(path);
@@ -99,4 +89,9 @@ std::vector< std::string > FileSystem::getFiles(std::string path)
 
     closedir(dir);
     return files;
+}
+
+std::string FileSystem::combineWithRoot(std::string path) const
+{
+    return root + "/" + path;
 }

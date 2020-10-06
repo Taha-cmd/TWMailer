@@ -12,12 +12,10 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <thread>
-
+#include <unistd.h>
 
 #include "functions.h"
 #include "server.class.h"
-#include "fileSystem.class.h"
-
 
 void cleanUp(int placeholder, void* server)
 {
@@ -26,6 +24,17 @@ void cleanUp(int placeholder, void* server)
 
 int main(int argc, char** argv)
 {
+
+    //Simple Filesystem Test for Bugfixes
+    /*
+    FileSystem fs(".");
+    std::vector<std::string> files = fs.getFiles("");
+
+    for(std::size_t i = 0;i < files.size();++i)
+        std::cout << files.at(i) << std::endl;
+
+    if(fs.Exists("Hallo") && fs.isDir("Hallo"))
+        std::cout << "Hallo exists and is Dir" << std::endl;*/
 
     if(argc != 2)
         error_and_die("usage server <port>");

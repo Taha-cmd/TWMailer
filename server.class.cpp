@@ -1,3 +1,4 @@
+
 #include "server.class.h"
 
 
@@ -10,10 +11,13 @@ Server::Server(int domain, int type, int protocol)
     memset( buffer, 0, BUFFERSIZE );
     memset( &serverIP, 0, sizeof(serverIP) );
     memset( &clientIP, 0, sizeof(clientIP) );
+
+    messageDb = new MessageRepository(FileSystem("."));
 }
 
 Server::~Server()
 {
+    delete messageDb;
     shutDown();
 }
 
@@ -24,6 +28,9 @@ void Server::shutDown()
 
 void Server::start(const std::string& port, int backlog)
 {
+    std::cout << "Starting Server" << std::endl;
+    std::cout << "Start Tcp- Listener on Port: " << port << std::endl;
+
     serverIP.sin_family = domain;
     serverIP.sin_addr.s_addr = INADDR_ANY;
     serverIP.sin_port = htons(std::stoi(port));
@@ -33,6 +40,9 @@ void Server::start(const std::string& port, int backlog)
 
     listen(sd, backlog);
     listening = true;
+
+    std::cout << "Establishing Message- Database." << std::endl;
+    messageDb->Establish();
 }
 
 int Server::acceptClient()
@@ -83,17 +93,30 @@ void Server::handleRequest(int socket)
 
 
             // handle commands, maybe write a function for each command
-        if( command == "read" ){
+        if(command == "send")
+        {
+            std::cout << "Received Send Request" << std::endl;
 
-        } else if( command == "list" ){
 
-        } else if( command == "delete" ){
+
+        }
+        else if( command == "read" )
+        {
+
+        } 
+        else if( command == "list" )
+        {
+
+        } 
+        else if( command == "delete" )
+        {
 
         } else if( command == "send" ){
 
         }
 
-
+        std::cout << request << std::endl;
+        std::cout << request.size() << std::endl;
 
         this->sendMessage(socket, request);
         std::cout << command << std::endl; 
