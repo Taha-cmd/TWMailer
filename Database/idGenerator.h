@@ -21,6 +21,7 @@ class IDGenerator{
         void Establish();
         int NextID();
     private:
+        IDGenerator();
 
         std::string name;
         std::string workingDirectory;
