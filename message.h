@@ -1,18 +1,21 @@
+
+#ifndef MESSAGE
+#define MESSAGE
+
 #include <stdexcept>
 #include <string>
 
-
 class Message {
     public:
-        std::string GetSender() { return sender; };
-        std::string GetRecipient() { return recipient; };
-        std::string GetSubject() { return subject; };
-        std::string GetMessage() { return message; };
+        std::string GetSender() const { return sender; };
+        std::string GetRecipient() const { return recipient; };
+        std::string GetSubject() const { return subject; };
+        std::string GetMessage() const { return message; };
 
         Message(std::string sender, std::string recipient, std::string subject, std::string message);
         ~Message();
 
-        std::string ToString();
+        std::string ToString() const { return sender + '\n' + recipient + '\n' + subject + "\n" + message + "\n.\n"; };
     private:
         Message();
 
@@ -23,3 +26,5 @@ class Message {
         std::string subject;
         std::string message;
 };
+
+#endif

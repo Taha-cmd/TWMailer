@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include "functions.h"
+#include "Database/messageRepository.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -47,5 +48,8 @@ class Server {
          struct sockaddr_in serverIP;
          struct sockaddr_in clientIP;
          socklen_t addrlen;
+
+         MessageRepository* messageDb;
+
          std::set<std::string> commands = {"send", "read", "list", "delete", "quit"};
 };

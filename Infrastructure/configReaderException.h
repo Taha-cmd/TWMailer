@@ -1,3 +1,7 @@
+
+#ifndef CONFIGREADEREXCEPTION
+#define CONFIGREADEREXCEPTION
+
 #include "exceptionBase.h"
 
 class ConfigReaderException : public ExceptionBase{
@@ -5,3 +9,5 @@ class ConfigReaderException : public ExceptionBase{
         ConfigReaderException(std::string errorMessage);
         ~ConfigReaderException();
 };
+
+#endif

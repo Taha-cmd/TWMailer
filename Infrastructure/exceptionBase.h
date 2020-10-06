@@ -1,3 +1,7 @@
+
+#ifndef EXCEPTIONBASE
+#define EXCEPTIONBASE
+
 #include <exception>
 #include <string>
 
@@ -13,3 +17,5 @@ class ExceptionBase : public std::exception {
     private:
         std::string errorMessage;
 };
+
+#endif

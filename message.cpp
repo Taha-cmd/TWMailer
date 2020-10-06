@@ -10,12 +10,6 @@ Message::~Message()
 {
 }
 
-std::string Message::ToString()
-{
-    return sender + '\n' + recipient + '\n' + 
-        subject + "\n" + message + "\n.\n";
-}
-
 void Message::Validate()
 {
     if(sender.size() > 8)

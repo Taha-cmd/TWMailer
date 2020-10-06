@@ -1,3 +1,7 @@
+
+#ifndef CONFIGREADER
+#define CONFIGREADER
+
 #include <iostream>
 #include <limits>
 #include <stdexcept>
@@ -18,3 +22,5 @@ class ConfigReader{
 
         std::istream& inputStream;
 };
+
+#endif
