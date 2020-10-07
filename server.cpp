@@ -23,18 +23,6 @@ void cleanUp(int placeholder, void* server)
 
 int main(int argc, char** argv)
 {
-
-    //Simple Filesystem Test for Bugfixes
-    /*
-    FileSystem fs(".");
-    std::vector<std::string> files = fs.getFiles("");
-
-    for(std::size_t i = 0;i < files.size();++i)
-        std::cout << files.at(i) << std::endl;
-
-    if(fs.Exists("Hallo") && fs.isDir("Hallo"))
-        std::cout << "Hallo exists and is Dir" << std::endl;*/
-
     if(argc != 3)
         error_and_die("usage server <port> <mailpool>");
     
@@ -57,6 +45,5 @@ int main(int argc, char** argv)
         }         
     } 
     
-
     exit(EXIT_SUCCESS);
 }

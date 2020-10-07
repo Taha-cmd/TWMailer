@@ -69,7 +69,7 @@ std::string FileSystem::readFile(std::string path) const
     return content;
 }
 
-std::vector< std::string > FileSystem::getFiles(const std::string& path) const
+std::vector< std::string > FileSystem::getFiles(const std::string& path, bool sorted = false) const
 {
 
     struct dirent* entry;
@@ -86,6 +86,14 @@ std::vector< std::string > FileSystem::getFiles(const std::string& path) const
             }
         }
     }
+
+    if(sorted)
+    {
+        std::sort(files.begin(), files.end(), [](const std::string& p1, const std::string& p2){
+            return std::stoi( p1 ) < std::stoi( p2 );
+        });
+    }
+ 
 
     closedir(dir);
     return files;

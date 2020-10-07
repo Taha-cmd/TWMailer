@@ -63,13 +63,31 @@ std::vector< std::string > MessageRepository::GetMessages(const std::string& use
 
     if(fileManager.Exists(databaseFolder + "/" + username))
     {
-        auto files = fileManager.getFiles( databaseFolder + "/" + username );
+        auto files = fileManager.getFiles( databaseFolder + "/" + username, true );        
         messages.reserve(files.size());
 
         for(auto path : files)
             messages.emplace_back( fileManager.readFile( databaseFolder + "/" + username + "/" + path) );
     }
 
-
     return messages;
+}
+
+std::string MessageRepository::GetMessage(const std::string& username, int index)
+{
+    std::lock_guard<std::mutex> guard(this->fileAccessMutex);
+    
+    if(!fileManager.Exists( databaseFolder + "/" + username))
+        throw MessageRepositoryException("user hast no mailbox");
+
+    auto files = fileManager.getFiles( databaseFolder + "/" + username, true );
+    std::string message;
+
+    try {
+        message = fileManager.readFile( databaseFolder + "/" + username + "/" + files.at(index) );
+    } catch(...) {
+        throw MessageRepositoryException("message does not exist");
+    }
+
+    return message;
 }

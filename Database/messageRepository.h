@@ -4,10 +4,12 @@
 
 #include <mutex>
 
-#include "../message.h"
+#include "../Infrastructure/message.h"
 #include "../Infrastructure/fileSystem.class.h"
+#include "../Infrastructure/functions.h"
 #include "idGenerator.h"
 #include "messageRepositoryException.h"
+#include <algorithm>
 
 class MessageRepository{
     public:
@@ -19,6 +21,7 @@ class MessageRepository{
 
         void Insert(const Message& message);
         std::vector< std::string > GetMessages(const std::string& username);
+        std::string GetMessage(const std::string& username, int index);
     private:
 
         const FileSystem& fileManager;

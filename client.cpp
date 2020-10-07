@@ -9,8 +9,8 @@
 
 #include "Infrastructure/configReader.h"
 #include "Infrastructure/functions.h"
+#include "Infrastructure/message.h"
 #include "client.class.h"
-#include "message.h"
 
 void cleanUp(int placeholder, void* client)
 {
@@ -70,6 +70,17 @@ int main(int argc, char** argv)
                 sendRequest += username;
 
             }
+            else if(  lower(command) == "read" )
+            {
+                std::string username, number;
+
+                reader.ReadLineParameter("Username", username, 8);
+                reader.ReadLineParameter("Message number", number, 8);
+
+                sendRequest = "READ\n";
+                sendRequest += username + "\n";
+                sendRequest += number + "\n";
+            }
             else if(lower(command) == "quit")
                 break;
             else
@@ -80,7 +91,7 @@ int main(int argc, char** argv)
 
             std::cout << "Start waiting for Response, at " << getCurrentTime() << std::endl;
             std::string response = client.readMessage();
-            std::cout << response << std::endl;
+            std::cout << "response: \n\n" << response << std::endl;
             std::cout << "Response received, at " << getCurrentTime() << std::endl;
 
         }

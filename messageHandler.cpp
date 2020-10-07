@@ -20,7 +20,7 @@ std::string MessageHandler::HandleSendMessage(const std::string request)
     requestCopy.erase(eofIndex);
 
     std::stringstream requestTextStream(requestCopy);
-    std::string sender, recipient, subject, message;
+    std::string sender, recipient, subject, message = "";
 
     std::getline(requestTextStream, sender);
 
@@ -37,8 +37,15 @@ std::string MessageHandler::HandleSendMessage(const std::string request)
     if (subject.empty())
         throw MessageHandlerException("Invalid Send- Request Format: Subject cannot be empty.");
 
-    std::getline(requestTextStream, message);
 
+    std::string line;
+
+    while(!requestTextStream.eof())
+    {
+        std::getline(requestTextStream, line);
+        message += line + "\n";
+    }
+    
     Message messageDto(sender, recipient, subject, message);
     messageRepo.Insert(messageDto);
 
@@ -52,7 +59,7 @@ std::string MessageHandler::ListMessages(const std::string& username)
     //betreff
     /* body */
 
-    int id = 1;
+    int number = 1;
     std::vector<std::string> messages = messageRepo.GetMessages(username);
     std::string response = "total number of messages: " + std::to_string(messages.size()) + "\n";
 
@@ -61,9 +68,31 @@ std::string MessageHandler::ListMessages(const std::string& username)
         for(int i = 0; i < 2; i++)
             readLine( msg );
 
-        response += "Betreff für Nachricht " + std::to_string(id) + ": " + readLine(msg) + "\n";
-        id++;
+        response += "Betreff für Nachricht " + std::to_string(number) + ": " + readLine(msg) + "\n";
+        number++;
     }
+
+    return response;
+}
+
+std::string MessageHandler::ReadMessage(const std::string& username, const std::string& number)
+{
+    int messageIndex = 0;
+
+    try {
+        messageIndex = std::stoi( number ) - 1;
+    } catch(...) {
+        throw MessageHandlerException("Invalid Read- Request Format: Error parsing Message Number."); 
+    }
+
+    std::string message = messageRepo.GetMessage(username, messageIndex);
+    std::string response; 
+    
+    response  = "Absender:  " + readLine(message) + "\n";
+    response += "Empfänger: " + readLine(message) + "\n";
+    response += "Betreff:   " + readLine(message) + "\n";
+    response += "Message: \n" + message + "\n";
+
 
     return response;
 }

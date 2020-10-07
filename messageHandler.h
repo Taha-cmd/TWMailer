@@ -8,7 +8,7 @@
 #include <string>
 #include <sstream>
 
-#include "message.h"
+#include "Infrastructure/message.h"
 #include "Infrastructure/functions.h"
 
 class MessageHandler
@@ -19,6 +19,7 @@ class MessageHandler
 
         std::string HandleSendMessage(const std::string request);
         std::string ListMessages(const std::string& username);
+        std::string ReadMessage(const std::string& username, const std::string& number);
     private:
         MessageHandler();
 

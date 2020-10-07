@@ -109,9 +109,14 @@ void Server::handleRequest(int socket)
             }
             else if (command == "read")
             {
+                std::cout << "Received Read Request" << std::endl;
+                std::string username = readLine( request );
+                std::string number = readLine( request );
+                response = messageHandler->ReadMessage(username, number);  
             }
             else if (command == "list")
             {
+                std::cout << "Received List Request" << std::endl;
                 std::string username = readLine( request );
                 response = messageHandler->ListMessages( username );
             }
@@ -125,7 +130,12 @@ void Server::handleRequest(int socket)
         catch(const MessageHandlerException& msgEx )
         {
             std::cout << msgEx.what() << std::endl;
-            this->sendMessage(socket, msgEx.what());
+            this->sendMessage( socket, "ERROR: " + std::string(msgEx.what()) );
+        }
+        catch(const MessageRepositoryException& ex)
+        {
+            std::cout << ex.what() << std::endl;
+            this->sendMessage( socket, "ERROR: " + std::string(ex.what()) );
         }
         catch(const std::exception& e)
         {

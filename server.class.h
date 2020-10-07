@@ -3,9 +3,6 @@
 #include <assert.h>
 #include <iostream>
 #include <string>
-#include "Database/messageRepository.h"
-#include "message.h"
-#include "messageHandler.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -17,9 +14,12 @@
 #include <set>
 #include <thread>
 #include <unistd.h>
-
 #include <sstream>
+
 #include "Infrastructure/functions.h"
+#include "messageHandler.h"
+#include "Database/messageRepository.h"
+#include "Infrastructure/message.h"
 
 enum Command {Read, Delete, List, Quit};
 

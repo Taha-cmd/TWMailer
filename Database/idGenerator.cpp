@@ -39,7 +39,7 @@ int IDGenerator::NextID()
         throw IdGeneratorException("File: " + keyGendFilePath + " not found.");
 
     std::string currentIdText = fileManager.readFile(keyGendFilePath);
-    std::cout << "NextID: " << currentIdText << " " << std::endl;
+    std::cout << "NextID: " << std::stoi( currentIdText ) + 1 << " " << std::endl;
     
     int currentId = std::stoi(currentIdText);
     ++currentId;

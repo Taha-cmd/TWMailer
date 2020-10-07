@@ -9,7 +9,7 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <ftw.h>
+#include <algorithm>
 
 class FileSystem {
 
@@ -28,7 +28,7 @@ class FileSystem {
         
         void writeToFile(std::string path, std::string content) const;
         std::string readFile(std::string) const;
-        std::vector<std::string> getFiles(const std::string&) const;
+        std::vector<std::string> getFiles(const std::string&, bool) const;
 
         std::string getRootFolder() const { return this->root; }
 
