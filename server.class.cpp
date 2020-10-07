@@ -87,8 +87,8 @@ void Server::handleRequest(int socket)
         try
         {
             std::string request = this->readMessage(socket);
-            std::string response = request;
             std::string command = lower(readLine(request));
+            std::string response;
 
             if (commands.find(command) == commands.end())
             {
@@ -107,12 +107,13 @@ void Server::handleRequest(int socket)
                 std::cout << "Received Send Request" << std::endl;
                 response = messageHandler->HandleSendMessage(request);
             }
-            else if (command == "read")
+            else if (command == "read" || command == "delete")
             {
-                std::cout << "Received Read Request" << std::endl;
+                std::cout << "Received " << command << " Request" << std::endl;
                 std::string username = readLine( request );
                 std::string number = readLine( request );
-                response = messageHandler->ReadMessage(username, number);  
+                response = command == "read" ?  messageHandler->ReadMessage(username, number)
+                                            : messageHandler->DeleteMessage(username,  number);     
             }
             else if (command == "list")
             {
@@ -120,11 +121,7 @@ void Server::handleRequest(int socket)
                 std::string username = readLine( request );
                 response = messageHandler->ListMessages( username );
             }
-            else if (command == "delete")
-            {
-            }
             
-
             this->sendMessage(socket, response);
         }
         catch(const MessageHandlerException& msgEx )

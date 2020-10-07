@@ -77,13 +77,7 @@ std::string MessageHandler::ListMessages(const std::string& username)
 
 std::string MessageHandler::ReadMessage(const std::string& username, const std::string& number)
 {
-    int messageIndex = 0;
-
-    try {
-        messageIndex = std::stoi( number ) - 1;
-    } catch(...) {
-        throw MessageHandlerException("Invalid Read- Request Format: Error parsing Message Number."); 
-    }
+    int messageIndex = parseIndex(number);
 
     std::string message = messageRepo.GetMessage(username, messageIndex);
     std::string response; 
@@ -95,4 +89,26 @@ std::string MessageHandler::ReadMessage(const std::string& username, const std::
 
 
     return response;
+}
+
+std::string MessageHandler::DeleteMessage(const std::string& username, const std::string& number)
+{
+    int messageIndex = parseIndex(number);
+    messageRepo.DeleteMessage(username, messageIndex);
+
+    return "OK\n";
+
+}
+
+int MessageHandler::parseIndex(const std::string& number) const
+{
+    int index;
+
+    try {
+        index = std::stoi( number ) - 1;
+    } catch(...) {
+        throw MessageHandlerException("Invalid Read- Request Format: Error parsing Message Number."); 
+    }
+
+    return index;
 }

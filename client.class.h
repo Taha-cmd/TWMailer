@@ -26,6 +26,7 @@ class Client {
         void connectToServer(const std::string&, const std::string&);
         std::string readMessage();
         void sendMessage(const std::string&);
+        void printHelp() const;
 
 
      private:

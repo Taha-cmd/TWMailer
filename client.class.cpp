@@ -63,3 +63,10 @@ void Client::sendMessage(const std::string& message)
     sendNBytes(sd, std::to_string(message.size()) + "\n", std::to_string( message.size() ).size() + 1);
     sendNBytes(sd, message, message.size());
 }
+
+void Client::printHelp() const
+{
+    std::cout << "commands { send, list, read, delete }" << std::endl;
+    std::cout << "enter 'quit' to exit the program" << std::endl;
+    std::cout << "enter 'help' to display this menu" << std::endl;
+}

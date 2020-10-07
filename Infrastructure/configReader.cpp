@@ -54,5 +54,5 @@ void ConfigReader::PrintReadParameterInfo(const std::string& parameterName, cons
     if(maxLength == std::numeric_limits<std::size_t>::max())
         std::cout << "Enter " << parameterName <<  ": " << std::endl;
     else
-        std::cout << "Enter " << parameterName << "(max characters: " << maxLength << ") :"  << std::endl;
+        std::cout << "Enter " << parameterName << "(max characters: " << maxLength << ") : ";
 }

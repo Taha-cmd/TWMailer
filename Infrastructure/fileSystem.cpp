@@ -34,7 +34,6 @@ bool FileSystem::isFile(std::string path) const
 
 void FileSystem::deleteFile(std::string path)
 {
-    path = root + "/" + path;
     path = realpath(path.data(), NULL);
     remove(path.data());
 }

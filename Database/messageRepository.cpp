@@ -91,3 +91,21 @@ std::string MessageRepository::GetMessage(const std::string& username, int index
 
     return message;
 }
+
+void MessageRepository::DeleteMessage(const std::string& username, int index)
+{
+    std::lock_guard<std::mutex> guard(this->fileAccessMutex);
+
+    if(!fileManager.Exists( databaseFolder + "/" + username))
+        throw MessageRepositoryException("user hast no mailbox");
+
+    auto files = fileManager.getFiles( databaseFolder + "/" + username, true );
+
+    try {
+        fileManager.deleteFile( databaseFolder + "/" + username + "/" + files.at(index) );
+    } catch(...) {
+        throw MessageRepositoryException("file not found for removal");
+    }
+        
+    
+}

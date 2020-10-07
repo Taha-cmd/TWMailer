@@ -22,9 +22,10 @@ class MessageRepository{
         void Insert(const Message& message);
         std::vector< std::string > GetMessages(const std::string& username);
         std::string GetMessage(const std::string& username, int index);
+        void DeleteMessage(const std::string& username, int index);
     private:
 
-        const FileSystem& fileManager;
+        FileSystem fileManager;
         IDGenerator* idGenerator;
 
         std::string name = "MessageDatabase";

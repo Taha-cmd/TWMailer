@@ -34,6 +34,7 @@ int main(int argc, char** argv)
     client.connectToServer(argv[1], argv[2]);
 
     std::string command;
+    client.printHelp();
 
     ConfigReader reader(std::cin);
 
@@ -41,7 +42,6 @@ int main(int argc, char** argv)
     {
         std::cout << "enter a command: ";
         std::getline(std::cin, command);
-        std::cout << "Entered command: " << command << std::endl;
         
         try
         {
@@ -70,18 +70,23 @@ int main(int argc, char** argv)
                 sendRequest += username;
 
             }
-            else if(  lower(command) == "read" )
+            else if(  lower(command) == "read" || lower(command) == "delete" )
             {
                 std::string username, number;
 
                 reader.ReadLineParameter("Username", username, 8);
                 reader.ReadLineParameter("Message number", number, 8);
 
-                sendRequest = "READ\n";
+                sendRequest = lower(command) == "read" ? "READ\n" : "DELETE\n";
                 sendRequest += username + "\n";
                 sendRequest += number + "\n";
             }
-            else if(lower(command) == "quit")
+            else if ( lower(command) == "help" )
+            {
+                client.printHelp();
+                continue;
+            }
+            else if( lower(command) == "quit" )
                 break;
             else
                 sendRequest = command;
@@ -91,9 +96,8 @@ int main(int argc, char** argv)
 
             std::cout << "Start waiting for Response, at " << getCurrentTime() << std::endl;
             std::string response = client.readMessage();
-            std::cout << "response: \n\n" << response << std::endl;
             std::cout << "Response received, at " << getCurrentTime() << std::endl;
-
+            std::cout << "response: \n\n" << response << std::endl;
         }
         catch(const ConfigReaderException& e)
         {
