@@ -102,3 +102,13 @@ std::string FileSystem::combineWithRoot(std::string path) const
 {
     return root + "/" + path;
 }
+
+std::string FileSystem::joinPaths(const std::vector< std::string >& paths) const
+{
+    std::string path = paths.at(0);
+
+    for(std::size_t i = 1; i < paths.size(); i++)
+        path.append( "/" + paths.at(i) );
+
+    return path;
+}

@@ -20,8 +20,8 @@ class MessageRepository{
         void Establish();
 
         void Insert(const Message& message);
-        std::vector< std::string > GetMessages(const std::string& username);
-        std::string GetMessage(const std::string& username, int index);
+        std::vector< Message > GetMessages(const std::string& username);
+        Message GetMessage(const std::string& username, int index);
         void DeleteMessage(const std::string& username, int index);
     private:
 

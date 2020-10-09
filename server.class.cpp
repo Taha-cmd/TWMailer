@@ -8,7 +8,6 @@ Server::Server(int domain, int type, int protocol, const std::string& mailpool)
     if ( (sd = socket(domain, type, protocol)) < 0)
         error_and_die("error creating socket");
 
-    memset( buffer, 0, BUFFERSIZE );
     memset( &serverIP, 0, sizeof(serverIP) );
     memset( &clientIP, 0, sizeof(clientIP) );
 
@@ -66,6 +65,9 @@ int Server::acceptClient()
 std::string Server::readMessage(int socket)
 {
     int size = std::stoi( readLineFromSocket(socket) );
+    if(size == 0)
+        return "quit";
+
     std::string body = readNBytesFromSocket(socket, size);
     return body;
 }
@@ -137,6 +139,10 @@ void Server::handleRequest(int socket)
         catch(const std::exception& e)
         {
             std::cerr << "Unexpected Error: " << e.what() << '\n';
+        }
+        catch(...)
+        {
+            std::cerr << "unknown error"  << std::endl;
         }
     }
 

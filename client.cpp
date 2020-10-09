@@ -101,7 +101,15 @@ int main(int argc, char** argv)
         }
         catch(const ConfigReaderException& e)
         {
-            std::cerr << e.what() << '\n';
+            std::cerr << "ERROR: " <<  e.what() << std::endl;
+        }
+        catch(const std::invalid_argument& ex)
+        {
+            std::cerr << "ERROR: " <<  ex.what() << std::endl;
+        }
+        catch(...)
+        {
+            std::cerr << "unknown error" << std::endl;
         }
     }
 

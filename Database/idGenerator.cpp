@@ -7,7 +7,7 @@ IDGenerator::IDGenerator(std::string name, std::string workingDirectory, const F
         throw std::invalid_argument("name cannot be empty.");
     
     this->fileName = name + ".keygen";
-    this->keyGendFilePath = workingDirectory + "/" + fileName;
+    this->keyGendFilePath = fileManager.joinPaths( {workingDirectory, fileName} );
 }
 
 IDGenerator::~IDGenerator()

@@ -60,6 +60,11 @@ std::string readLineFromSocket(int sd)
         {
             error_and_die("error reading charachters from socket in readLineFromSocket()");
         }
+        else
+        {
+            return "0";
+        }
+        
     }
 
     return response;
@@ -82,7 +87,7 @@ std::string readNBytesFromSocket(int socket, int size)
             error_and_die("error reading n bytes from socket in readNBytesFromSocket");
 
         if(n == 0)
-            return "";
+            return "0";
         
         bytesRead += n;
         bytesLeft -= n;
@@ -92,7 +97,7 @@ std::string readNBytesFromSocket(int socket, int size)
     return std::string(buffer);
 }
 
-void sendNBytes(int socket, const std::string& payload, int size)
+int sendNBytes(int socket, const std::string& payload, int size)
 {
     int bytesSent = 0;
     int bytesLeft = payload.size();
@@ -104,9 +109,14 @@ void sendNBytes(int socket, const std::string& payload, int size)
         if( n == -1)
             error_and_die("error sending message in sendNBytes()");
 
+        if( n == 0 )
+            return 0;
+
         bytesSent += n;
         bytesLeft -= n;
     }
+
+    return bytesSent;
 }
 
 std::string lower(std::string str)

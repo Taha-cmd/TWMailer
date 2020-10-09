@@ -21,8 +21,6 @@
 #include "Database/messageRepository.h"
 #include "Infrastructure/message.h"
 
-enum Command {Read, Delete, List, Quit};
-
 
 class Server {
      public:
@@ -48,7 +46,6 @@ class Server {
          int type;
          int protocol;
 
-         char buffer[BUFFERSIZE];
          struct sockaddr_in serverIP;
          struct sockaddr_in clientIP;
          socklen_t addrlen;

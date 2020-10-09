@@ -36,8 +36,7 @@ class Client {
          int domain;
          int type;
          int protocol;
-
-         char buffer[BUFFERSIZE];
+         
          struct sockaddr_in serverIP;
 };
 

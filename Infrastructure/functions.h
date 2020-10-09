@@ -18,7 +18,7 @@ std::string readLine(std::string&);
 std::string readLineFromSocket(int);
 std::string readNBytesFromSocket(int,int);
 std::string lower(std::string);
-void sendNBytes(int,const std::string&,int);
+int sendNBytes(int,const std::string&,int);
 void exitProgram(int);
 std::time_t getCurrentTime();
 

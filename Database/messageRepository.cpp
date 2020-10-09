@@ -36,7 +36,7 @@ void MessageRepository::Insert(const Message& message)
 
     std::lock_guard<std::mutex> guard(this->fileAccessMutex);
 
-    std::string recipientFolder = databaseFolder + "/" + recipient;
+    std::string recipientFolder = fileManager.joinPaths({databaseFolder, recipient});
     std::cout << "Looking for Recipientfolder: " << recipientFolder << std::endl;
 
     if(!fileManager.Exists(recipientFolder))
@@ -46,8 +46,7 @@ void MessageRepository::Insert(const Message& message)
         throw MessageRepositoryException("Error Inserting Message for Recipient: " + recipient + " File exists but it is not a Folder.");
 
     int messageId = idGenerator->NextID();
-
-    std::string messageFilePath = databaseFolder + "/" + recipient + "/" + std::to_string(messageId) + ".txt";
+    std::string messageFilePath = fileManager.joinPaths( {databaseFolder, recipient, std::to_string(messageId) + ".txt"} );
 
     if(fileManager.Exists(messageFilePath))
         throw MessageRepositoryException("Error inserting Message ID: " + std::to_string(messageId) + ". File already exists");
@@ -56,56 +55,60 @@ void MessageRepository::Insert(const Message& message)
     fileManager.writeToFile(messageFilePath, message.ToString());
 }
 
-std::vector< std::string > MessageRepository::GetMessages(const std::string& username)
+std::vector< Message > MessageRepository::GetMessages(const std::string& username)
 {
     std::lock_guard<std::mutex> guard(this->fileAccessMutex);
-    std::vector<std::string> messages;
+    std::vector< Message > messages;
 
-    if(fileManager.Exists(databaseFolder + "/" + username))
+    if( fileManager.Exists( fileManager.joinPaths( {databaseFolder, username} ) ) )
     {
-        auto files = fileManager.getFiles( databaseFolder + "/" + username, true );        
-        messages.reserve(files.size());
+        auto files = fileManager.getFiles( fileManager.joinPaths( {databaseFolder, username} ),  true );        
+        messages.reserve( files.size() );
 
-        for(auto path : files)
-            messages.emplace_back( fileManager.readFile( databaseFolder + "/" + username + "/" + path) );
+        for(const auto& path : files)
+        {
+            std::string text = fileManager.readFile( fileManager.joinPaths( {databaseFolder, username, path} ) );
+            messages.emplace_back( text );
+        }
+            
     }
 
     return messages;
 }
 
-std::string MessageRepository::GetMessage(const std::string& username, int index)
+Message MessageRepository::GetMessage(const std::string& username, int index)
 {
     std::lock_guard<std::mutex> guard(this->fileAccessMutex);
     
-    if(!fileManager.Exists( databaseFolder + "/" + username))
+    if(!fileManager.Exists( fileManager.joinPaths( {databaseFolder, username} ) ))
         throw MessageRepositoryException("user hast no mailbox");
 
-    auto files = fileManager.getFiles( databaseFolder + "/" + username, true );
-    std::string message;
+    auto files = fileManager.getFiles( fileManager.joinPaths( {databaseFolder, username} ), true );
 
-    try {
-        message = fileManager.readFile( databaseFolder + "/" + username + "/" + files.at(index) );
-    } catch(...) {
+    try 
+    {
+        std::string text = fileManager.readFile( fileManager.joinPaths( {databaseFolder, username, files.at(index)} ) );
+        return Message( text );
+    } 
+    catch(...)
+    {
         throw MessageRepositoryException("message does not exist");
     }
 
-    return message;
 }
 
 void MessageRepository::DeleteMessage(const std::string& username, int index)
 {
     std::lock_guard<std::mutex> guard(this->fileAccessMutex);
 
-    if(!fileManager.Exists( databaseFolder + "/" + username))
+    if(!fileManager.Exists( fileManager.joinPaths( {databaseFolder, username} ) ))
         throw MessageRepositoryException("user hast no mailbox");
 
-    auto files = fileManager.getFiles( databaseFolder + "/" + username, true );
+    auto files = fileManager.getFiles( fileManager.joinPaths( {databaseFolder, username} ), true );
 
     try {
-        fileManager.deleteFile( databaseFolder + "/" + username + "/" + files.at(index) );
+        fileManager.deleteFile( fileManager.joinPaths( {databaseFolder, username, files.at(index)} ) );
     } catch(...) {
         throw MessageRepositoryException("file not found for removal");
-    }
-        
-    
+    } 
 }
