@@ -4,10 +4,12 @@
 
 #include <mutex>
 
-#include "../message.h"
+#include "../Infrastructure/message.h"
 #include "../Infrastructure/fileSystem.class.h"
+#include "../Infrastructure/functions.h"
 #include "idGenerator.h"
 #include "messageRepositoryException.h"
+#include <algorithm>
 
 class MessageRepository{
     public:
@@ -18,9 +20,12 @@ class MessageRepository{
         void Establish();
 
         void Insert(const Message& message);
+        std::vector< Message > GetMessages(const std::string& username);
+        Message GetMessage(const std::string& username, int index);
+        void DeleteMessage(const std::string& username, int index);
     private:
 
-        const FileSystem& fileManager;
+        FileSystem fileManager;
         IDGenerator* idGenerator;
 
         std::string name = "MessageDatabase";

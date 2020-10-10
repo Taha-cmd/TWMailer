@@ -36,7 +36,7 @@ void MessageRepository::Insert(const Message& message)
 
     std::lock_guard<std::mutex> guard(this->fileAccessMutex);
 
-    std::string recipientFolder = databaseFolder + "/" + recipient;
+    std::string recipientFolder = fileManager.joinPaths({databaseFolder, recipient});
     std::cout << "Looking for Recipientfolder: " << recipientFolder << std::endl;
 
     if(!fileManager.Exists(recipientFolder))
@@ -46,12 +46,69 @@ void MessageRepository::Insert(const Message& message)
         throw MessageRepositoryException("Error Inserting Message for Recipient: " + recipient + " File exists but it is not a Folder.");
 
     int messageId = idGenerator->NextID();
-
-    std::string messageFilePath = databaseFolder + "/" + recipient + "/" + std::to_string(messageId) + ".txt";
+    std::string messageFilePath = fileManager.joinPaths( {databaseFolder, recipient, std::to_string(messageId) + ".txt"} );
 
     if(fileManager.Exists(messageFilePath))
-        throw new MessageRepositoryException("Error inserting Message ID: " + std::to_string(messageId) + ". File already exists");
+        throw MessageRepositoryException("Error inserting Message ID: " + std::to_string(messageId) + ". File already exists");
     
     std::cout << "Creating MessageEntry: " << messageFilePath << std::endl;
     fileManager.writeToFile(messageFilePath, message.ToString());
+}
+
+std::vector< Message > MessageRepository::GetMessages(const std::string& username)
+{
+    std::lock_guard<std::mutex> guard(this->fileAccessMutex);
+    std::vector< Message > messages;
+
+    if( fileManager.Exists( fileManager.joinPaths( {databaseFolder, username} ) ) )
+    {
+        auto files = fileManager.getFiles( fileManager.joinPaths( {databaseFolder, username} ),  true );        
+        messages.reserve( files.size() );
+
+        for(const auto& path : files)
+        {
+            std::string text = fileManager.readFile( fileManager.joinPaths( {databaseFolder, username, path} ) );
+            messages.emplace_back( text );
+        }
+            
+    }
+
+    return messages;
+}
+
+Message MessageRepository::GetMessage(const std::string& username, int index)
+{
+    std::lock_guard<std::mutex> guard(this->fileAccessMutex);
+    
+    if(!fileManager.Exists( fileManager.joinPaths( {databaseFolder, username} ) ))
+        throw MessageRepositoryException("user hast no mailbox");
+
+    auto files = fileManager.getFiles( fileManager.joinPaths( {databaseFolder, username} ), true );
+
+    try 
+    {
+        std::string text = fileManager.readFile( fileManager.joinPaths( {databaseFolder, username, files.at(index)} ) );
+        return Message( text );
+    } 
+    catch(...)
+    {
+        throw MessageRepositoryException("message does not exist");
+    }
+
+}
+
+void MessageRepository::DeleteMessage(const std::string& username, int index)
+{
+    std::lock_guard<std::mutex> guard(this->fileAccessMutex);
+
+    if(!fileManager.Exists( fileManager.joinPaths( {databaseFolder, username} ) ))
+        throw MessageRepositoryException("user hast no mailbox");
+
+    auto files = fileManager.getFiles( fileManager.joinPaths( {databaseFolder, username} ), true );
+
+    try {
+        fileManager.deleteFile( fileManager.joinPaths( {databaseFolder, username, files.at(index)} ) );
+    } catch(...) {
+        throw MessageRepositoryException("file not found for removal");
+    } 
 }

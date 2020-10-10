@@ -6,8 +6,6 @@ Client::Client(int domain, int type, int protocol)
 {
     if ( (sd = socket(domain, type, protocol)) < 0)
         error_and_die("error creating socket");
-
-    memset(buffer, 0, BUFFERSIZE);
 }
 
 Client::~Client()
@@ -51,6 +49,10 @@ std::string Client::readMessage()
         return "";
 
     int size = std::stoi( readLineFromSocket(sd) );
+    if(size == 0)
+        return "server closed the connection, existing";
+
+
     std::string body = readNBytesFromSocket(sd, size);
     return body;
 }
@@ -62,4 +64,11 @@ void Client::sendMessage(const std::string& message)
 
     sendNBytes(sd, std::to_string(message.size()) + "\n", std::to_string( message.size() ).size() + 1);
     sendNBytes(sd, message, message.size());
+}
+
+void Client::printHelp() const
+{
+    std::cout << "commands { send, list, read, delete }" << std::endl;
+    std::cout << "enter 'quit' to exit the program" << std::endl;
+    std::cout << "enter 'help' to display this menu" << std::endl;
 }

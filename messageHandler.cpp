@@ -9,7 +9,7 @@ MessageHandler::~MessageHandler()
 {
 }
 
-std::string MessageHandler::HandleSendMessage(const std::string request)
+std::string MessageHandler::HandleSendMessage(const std::string& request)
 {
     std::size_t eofIndex = request.find("\n.\n");
 
@@ -19,8 +19,9 @@ std::string MessageHandler::HandleSendMessage(const std::string request)
     std::string requestCopy = request;
     requestCopy.erase(eofIndex);
 
+/*
     std::stringstream requestTextStream(requestCopy);
-    std::string sender, recipient, subject, message;
+    std::string sender, recipient, subject, message = "";
 
     std::getline(requestTextStream, sender);
 
@@ -37,10 +38,65 @@ std::string MessageHandler::HandleSendMessage(const std::string request)
     if (subject.empty())
         throw MessageHandlerException("Invalid Send- Request Format: Subject cannot be empty.");
 
-    std::getline(requestTextStream, message);
 
-    Message messageDto(sender, recipient, subject, message);
-    messageRepo.Insert(messageDto);
+    std::string line;
+
+    while(!requestTextStream.eof())
+    {
+        std::getline(requestTextStream, line);
+        message += line + "\n";
+    } */
+
+    // Message class allready has a validate method,
+    // maybe we do this instead?
+    
+    Message messageDto( requestCopy );
+    messageRepo.Insert( messageDto );
 
     return "Message saved.";
+}
+
+std::string MessageHandler::ListMessages(const std::string& username)
+{   
+    int number = 1;
+    std::vector< Message > messages = messageRepo.GetMessages(username);
+    std::string response = "total number of messages: " + std::to_string(messages.size()) + "\n";
+
+    for(const auto& msg : messages )
+    {
+        response += "Betreff für Nachricht " + std::to_string(number) + ": " + msg.GetSubject() + "\n";
+        number++;
+    }
+
+    return response;
+}
+
+std::string MessageHandler::ReadMessage(const std::string& username, const std::string& number)
+{
+    int messageIndex = parseIndex(number);
+    Message message = messageRepo.GetMessage(username, messageIndex);
+
+    return message.ToEmailFormat();
+}
+
+std::string MessageHandler::DeleteMessage(const std::string& username, const std::string& number)
+{
+    int messageIndex = parseIndex(number);
+    messageRepo.DeleteMessage(username, messageIndex);
+
+    return "OK\n";
+
+}
+
+int MessageHandler::parseIndex(const std::string& number) const
+{
+    int index;
+
+    try {
+        index = std::stoi( number ) - 1;
+    } catch(...) {
+        throw MessageHandlerException("Invalid Read- Request Format: Error parsing Message Number."); 
+    }
+
+    return index;
 }

@@ -26,6 +26,7 @@ class Client {
         void connectToServer(const std::string&, const std::string&);
         std::string readMessage();
         void sendMessage(const std::string&);
+        void printHelp() const;
 
 
      private:
@@ -35,8 +36,7 @@ class Client {
          int domain;
          int type;
          int protocol;
-
-         char buffer[BUFFERSIZE];
+         
          struct sockaddr_in serverIP;
 };
 

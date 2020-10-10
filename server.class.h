@@ -3,9 +3,6 @@
 #include <assert.h>
 #include <iostream>
 #include <string>
-#include "Database/messageRepository.h"
-#include "message.h"
-#include "messageHandler.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -17,11 +14,12 @@
 #include <set>
 #include <thread>
 #include <unistd.h>
-
 #include <sstream>
-#include "Infrastructure/functions.h"
 
-enum Command {Read, Delete, List, Quit};
+#include "Infrastructure/functions.h"
+#include "messageHandler.h"
+#include "Database/messageRepository.h"
+#include "Infrastructure/message.h"
 
 
 class Server {
@@ -48,7 +46,6 @@ class Server {
          int type;
          int protocol;
 
-         char buffer[BUFFERSIZE];
          struct sockaddr_in serverIP;
          struct sockaddr_in clientIP;
          socklen_t addrlen;

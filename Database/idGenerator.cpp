@@ -7,7 +7,7 @@ IDGenerator::IDGenerator(std::string name, std::string workingDirectory, const F
         throw std::invalid_argument("name cannot be empty.");
     
     this->fileName = name + ".keygen";
-    this->keyGendFilePath = workingDirectory + "/" + fileName;
+    this->keyGendFilePath = fileManager.joinPaths( {workingDirectory, fileName} );
 }
 
 IDGenerator::~IDGenerator()
@@ -39,7 +39,7 @@ int IDGenerator::NextID()
         throw IdGeneratorException("File: " + keyGendFilePath + " not found.");
 
     std::string currentIdText = fileManager.readFile(keyGendFilePath);
-    std::cout << "NextID: " << currentIdText << " " << std::endl;
+    std::cout << "NextID: " << std::stoi( currentIdText ) + 1 << " " << std::endl;
     
     int currentId = std::stoi(currentIdText);
     ++currentId;

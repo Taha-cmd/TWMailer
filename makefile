@@ -2,15 +2,17 @@
 
 COMPILER=g++
 FLAGS=-Wall -pthread -std=c++11
-INFRASTRUCTURE=configReader.o exceptionBase.o configReaderException.o functions.o
+INFRASTRUCTURE=configReader.o exceptionBase.o configReaderException.o functions.o message.o
 DATEBASE=messageRepositoryException.o messageRepository.o idGeneratorException.o idGenerator.o
+SERVERDEPENDENCIES=server.class.o messageHandler.o messageHandlerException.o fileSystem.o
+CLIENTDEPENDENCIES=client.class.o
 
 all: client server
 
-client: client.o client.class.o message.o $(INFRASTRUCTURE)
+client: client.o $(CLIENTDEPENDENCIES) $(INFRASTRUCTURE)
 	$(COMPILER) $(FLAGS) $^ -o $@
 
-server: fileSystem.o server.o server.class.o message.o messageHandler.o messageHandlerException.o $(INFRASTRUCTURE) $(DATEBASE)
+server: server.o $(SERVERDEPENDENCIES) $(INFRASTRUCTURE) $(DATEBASE)
 	$(COMPILER) $(FLAGS) $^ -o $@
 
 %.o: %.cpp 

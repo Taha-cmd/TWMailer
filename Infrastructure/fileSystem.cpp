@@ -34,7 +34,6 @@ bool FileSystem::isFile(std::string path) const
 
 void FileSystem::deleteFile(std::string path)
 {
-    path = root + "/" + path;
     path = realpath(path.data(), NULL);
     remove(path.data());
 }
@@ -69,10 +68,8 @@ std::string FileSystem::readFile(std::string path) const
     return content;
 }
 
-std::vector< std::string > FileSystem::getFiles(std::string path)
+std::vector< std::string > FileSystem::getFiles(const std::string& path, bool sorted = false) const
 {
-    path = combineWithRoot(path);
-    path = realpath(path.data(), NULL);
 
     struct dirent* entry;
     DIR* dir = opendir(path.data());
@@ -89,6 +86,14 @@ std::vector< std::string > FileSystem::getFiles(std::string path)
         }
     }
 
+    if(sorted)
+    {
+        std::sort(files.begin(), files.end(), [](const std::string& p1, const std::string& p2){
+            return std::stoi( p1 ) < std::stoi( p2 );
+        });
+    }
+ 
+
     closedir(dir);
     return files;
 }
@@ -96,4 +101,14 @@ std::vector< std::string > FileSystem::getFiles(std::string path)
 std::string FileSystem::combineWithRoot(std::string path) const
 {
     return root + "/" + path;
+}
+
+std::string FileSystem::joinPaths(const std::vector< std::string >& paths) const
+{
+    std::string path = paths.at(0);
+
+    for(std::size_t i = 1; i < paths.size(); i++)
+        path.append( "/" + paths.at(i) );
+
+    return path;
 }

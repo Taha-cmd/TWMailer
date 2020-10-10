@@ -9,8 +9,8 @@
 
 #include "Infrastructure/configReader.h"
 #include "Infrastructure/functions.h"
+#include "Infrastructure/message.h"
 #include "client.class.h"
-#include "message.h"
 
 void cleanUp(int placeholder, void* client)
 {
@@ -34,6 +34,7 @@ int main(int argc, char** argv)
     client.connectToServer(argv[1], argv[2]);
 
     std::string command;
+    client.printHelp();
 
     ConfigReader reader(std::cin);
 
@@ -41,7 +42,6 @@ int main(int argc, char** argv)
     {
         std::cout << "enter a command: ";
         std::getline(std::cin, command);
-        std::cout << "Entered command: " << command << std::endl;
         
         try
         {
@@ -60,7 +60,33 @@ int main(int argc, char** argv)
                 sendRequest = "SEND\n";
                 sendRequest += msg.ToNetworkString();
             }
-            else if(lower(command) == "quit")
+            else if( lower(command) == "list" )
+            {
+                std::string username;
+
+                reader.ReadLineParameter("Username", username, 8);
+
+                sendRequest = "LIST\n";
+                sendRequest += username;
+
+            }
+            else if(  lower(command) == "read" || lower(command) == "delete" )
+            {
+                std::string username, number;
+
+                reader.ReadLineParameter("Username", username, 8);
+                reader.ReadLineParameter("Message number", number, 8);
+
+                sendRequest = lower(command) == "read" ? "READ\n" : "DELETE\n";
+                sendRequest += username + "\n";
+                sendRequest += number + "\n";
+            }
+            else if ( lower(command) == "help" )
+            {
+                client.printHelp();
+                continue;
+            }
+            else if( lower(command) == "quit" )
                 break;
             else
                 sendRequest = command;
@@ -69,15 +95,21 @@ int main(int argc, char** argv)
             client.sendMessage(sendRequest);
 
             std::cout << "Start waiting for Response, at " << getCurrentTime() << std::endl;
-            std::string msg = client.readMessage();
+            std::string response = client.readMessage();
             std::cout << "Response received, at " << getCurrentTime() << std::endl;
-
-            std::cout << msg.size() << std::endl;
-            std::cout << msg << std::endl;
+            std::cout << "response: \n\n" << response << std::endl;
         }
         catch(const ConfigReaderException& e)
         {
-            std::cerr << e.what() << '\n';
+            std::cerr << "ERROR: " <<  e.what() << std::endl;
+        }
+        catch(const std::invalid_argument& ex)
+        {
+            std::cerr << "ERROR: " <<  ex.what() << std::endl;
+        }
+        catch(...)
+        {
+            std::cerr << "unknown error" << std::endl;
         }
     }
 
