@@ -2,27 +2,34 @@
 
 COMPILER=g++
 FLAGS=-Wall -pthread -std=c++11
-INFRASTRUCTURE=configReader.o exceptionBase.o configReaderException.o functions.o message.o
-DATEBASE=messageRepositoryException.o messageRepository.o idGeneratorException.o idGenerator.o
-SERVERDEPENDENCIES=server.class.o messageHandler.o messageHandlerException.o fileSystem.o
-CLIENTDEPENDENCIES=client.class.o
+OBJDIR= obj
+INFRASTRUCTURE= $(addprefix $(OBJDIR)/, exceptionBase.o functions.o message.o)
+DATEBASE= $(addprefix $(OBJDIR)/, messageRepositoryException.o messageRepository.o idGeneratorException.o idGenerator.o)
+SERVERDEPENDENCIES= $(addprefix $(OBJDIR)/, server.class.o messageHandler.o messageHandlerException.o fileSystem.o)
+CLIENTDEPENDENCIES= $(addprefix $(OBJDIR)/, client.class.o configReader.o configReaderException.o)
 
 all: client server
 
-client: client.o $(CLIENTDEPENDENCIES) $(INFRASTRUCTURE)
+client: obj/client.o $(CLIENTDEPENDENCIES) $(INFRASTRUCTURE)
 	$(COMPILER) $(FLAGS) $^ -o $@
 
-server: server.o $(SERVERDEPENDENCIES) $(INFRASTRUCTURE) $(DATEBASE)
+server: obj/server.o $(SERVERDEPENDENCIES) $(INFRASTRUCTURE) $(DATEBASE)
 	$(COMPILER) $(FLAGS) $^ -o $@
 
-%.o: %.cpp 
-	$(COMPILER) $(FLAGS) -c $^ 
+obj/%.o: %.cpp 
+	$(COMPILER) $(FLAGS) -c $^ -o $@
 
-%.o: Infrastructure/%.cpp 
-	$(COMPILER) $(FLAGS) -c $^ 
+obj/%.o: Infrastructure/%.cpp 
+	$(COMPILER) $(FLAGS) -c $^ -o $@
 
-%.o: Database/%.cpp 
-	$(COMPILER) $(FLAGS) -c $^ 
+obj/%.o: Database/%.cpp 
+	$(COMPILER) $(FLAGS) -c $^ -o $@
+
+obj/%.o: ServerDependencies/%.cpp
+	$(COMPILER) $(FLAGS) -c $^ -o $@
+
+obj/%.o: ClientDependencies/%.cpp
+	$(COMPILER) $(FLAGS) -c $^ -o $@
 
 clean:
-	rm *.o client server
+	rm *.o client server obj/*.o

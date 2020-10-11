@@ -10,17 +10,17 @@
 
 
 #define BUFFERSIZE 1024
-#define BACKLOG 5
 
+// functions that are used across all classes
 
-void error_and_die(const std::string&);
-std::string readLine(std::string&);
-std::string readLineFromSocket(int);
-std::string readNBytesFromSocket(int,int);
-std::string lower(std::string);
-int sendNBytes(int,const std::string&,int);
-void exitProgram(int);
-std::time_t getCurrentTime();
+void error_and_die(const std::string&); // for error handling
+std::string readLine(std::string&);    // reading a line from a string, modify the original string
+std::string readLineFromSocket(int);   // read one line from a given socket, needed to parse the content-length header
+std::string readNBytesFromSocket(int,int);  // read exactly n bytes from a socket
+std::string lower(std::string);  // UPPERCASE to lowercase
+int sendNBytes(int,const std::string&,int);  // send exactly n bytes to a socket
+void exitProgram(int);  // signals route to a normal exit
+std::time_t getCurrentTime();  // I'll let you figure this one out
 
 
 

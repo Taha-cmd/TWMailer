@@ -12,7 +12,11 @@
 #include <fcntl.h>
 
 
-#include "Infrastructure/functions.h"
+#include "../Infrastructure/functions.h"
+
+
+// this class implements the socket api for the client side in an easy and understandable object oriented way
+// connect to the server, send and receive messages in one line, the ugly c functions are in the background
 
 class Client {
      public:

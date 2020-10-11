@@ -4,7 +4,7 @@
 
 #include<string>
 
-#include "Infrastructure/exceptionBase.h"
+#include "../Infrastructure/exceptionBase.h"
 
 class MessageHandlerException : public ExceptionBase
 {

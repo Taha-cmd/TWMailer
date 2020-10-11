@@ -5,11 +5,16 @@
 #include <mutex>
 
 #include "../Infrastructure/message.h"
-#include "../Infrastructure/fileSystem.class.h"
+#include "../ServerDependencies/fileSystem.class.h"
 #include "../Infrastructure/functions.h"
 #include "idGenerator.h"
 #include "messageRepositoryException.h"
 #include <algorithm>
+
+
+// the database of the project
+// only this class can access the files stored in the mail pool
+// each access is secured with a mutex
 
 class MessageRepository{
     public:

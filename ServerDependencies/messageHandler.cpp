@@ -18,40 +18,8 @@ std::string MessageHandler::HandleSendMessage(const std::string& request)
 
     std::string requestCopy = request;
     requestCopy.erase(eofIndex);
-
-/*
-    std::stringstream requestTextStream(requestCopy);
-    std::string sender, recipient, subject, message = "";
-
-    std::getline(requestTextStream, sender);
-
-    if (sender.empty())
-        throw MessageHandlerException("Invalid Send- Request Format: Sender cannot be empty.");
-
-    std::getline(requestTextStream, recipient);
-
-    if (recipient.empty())
-        throw MessageHandlerException("Invalid Send- Request Format: Recipient cannot be empty.");
-
-    std::getline(requestTextStream, subject);
-
-    if (subject.empty())
-        throw MessageHandlerException("Invalid Send- Request Format: Subject cannot be empty.");
-
-
-    std::string line;
-
-    while(!requestTextStream.eof())
-    {
-        std::getline(requestTextStream, line);
-        message += line + "\n";
-    } */
-
-    // Message class allready has a validate method,
-    // maybe we do this instead?
     
-    Message messageDto( requestCopy );
-    messageRepo.Insert( messageDto );
+    messageRepo.Insert( Message( requestCopy ) );
 
     return "Message saved.";
 }

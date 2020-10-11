@@ -8,6 +8,9 @@
 
 #include "configReaderException.h"
 
+
+// this class reads parameters from the console with constraints on length and validates the input
+
 class ConfigReader{
     public:
         ConfigReader(std::istream& inputStream);

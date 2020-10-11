@@ -7,10 +7,11 @@
 #include <stdexcept>
 #include <signal.h>
 
-#include "Infrastructure/configReader.h"
+#include "ClientDependencies/configReader.h"
+#include "ClientDependencies/client.class.h"
 #include "Infrastructure/functions.h"
 #include "Infrastructure/message.h"
-#include "client.class.h"
+
 
 void cleanUp(int placeholder, void* client)
 {

@@ -16,11 +16,15 @@
 #include <unistd.h>
 #include <sstream>
 
-#include "Infrastructure/functions.h"
+#include "../Infrastructure/functions.h"
 #include "messageHandler.h"
-#include "Database/messageRepository.h"
-#include "Infrastructure/message.h"
+#include "../Database/messageRepository.h"
+#include "../Infrastructure/message.h"
 
+
+
+// similar like client.class, this class abstracts the ugly c socket functions for the server side
+// the method handleRequest is a threaded method which parses the client's command and call the proper method from messageHandler
 
 class Server {
      public:
