@@ -7,7 +7,11 @@
 #include <string>
 
 #include "idGeneratorException.h"
-#include "../Infrastructure/fileSystem.class.h"
+#include "../ServerDependencies/fileSystem.class.h"
+
+
+// creates the index file if not existing, protect it with a mutex when generating an id and incremeting the value
+
 
 class IDGenerator{
     public:

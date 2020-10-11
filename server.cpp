@@ -14,7 +14,9 @@
 #include <thread>
 #include <unistd.h>
 
-#include "server.class.h"
+#include "ServerDependencies/server.class.h"
+
+#define BACKLOG 5
 
 void cleanUp(int placeholder, void* server)
 {

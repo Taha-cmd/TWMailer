@@ -40,7 +40,6 @@ void ConfigReader::ReadTextParameter(const std::string& parameterName, std::stri
         temp += line + '\n';
     }
 
-    //std::cout << "[" << temp[index] << "]" << std::endl;
     temp.erase(index);
 
     if(temp.length() > maxLength)

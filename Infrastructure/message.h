@@ -6,6 +6,10 @@
 #include "functions.h"
 #include <string>
 
+// a compact respresnation of a message
+// can extract single values from a message and validate the values
+// class can convert the object to a string and vice versa
+
 class Message {
     public:
         std::string GetSender() const { return sender; };

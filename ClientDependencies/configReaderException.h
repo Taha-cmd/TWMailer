@@ -2,7 +2,7 @@
 #ifndef CONFIGREADEREXCEPTION
 #define CONFIGREADEREXCEPTION
 
-#include "exceptionBase.h"
+#include "../Infrastructure/exceptionBase.h"
 
 class ConfigReaderException : public ExceptionBase{
     public:

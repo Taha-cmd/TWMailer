@@ -11,6 +11,11 @@
 #include <unistd.h>
 #include <algorithm>
 
+
+// this class works with the filesystem and wraps the ugly c functions with more understandable and compact method names
+// similar to filesystem namespace in c++17
+
+
 class FileSystem {
 
     public:
