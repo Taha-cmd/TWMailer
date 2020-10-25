@@ -25,6 +25,7 @@ class Client {
         virtual ~Client();
 
         bool isConnected() const { return connected; };
+        bool isLoggedIn() const { return loggedIn; };
         void shutDown();
         
         void connectToServer(const std::string&, const std::string&);
@@ -35,6 +36,7 @@ class Client {
 
      private:
          bool connected;
+         bool loggedIn;
          int sd;
 
          int domain;

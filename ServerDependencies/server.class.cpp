@@ -13,6 +13,7 @@ Server::Server(int domain, int type, int protocol, const std::string& mailpool)
 
     messageDb = new MessageRepository(FileSystem(mailpool));
     messageHandler = new MessageHandler(*messageDb);
+    clientsManager = new ClientsManager();
 }
 
 Server::~Server()
@@ -27,6 +28,9 @@ void Server::shutDown()
 
     if(messageHandler != nullptr)
         delete messageHandler;
+
+    if(clientsManager != nullptr)
+        delete clientsManager;
         
     close(sd);
 }
@@ -55,15 +59,16 @@ void Server::start(const std::string& port, int backlog)
     messageDb->Establish();
 }
 
-int Server::acceptClient()
+ConnectedClient Server::acceptClient()
 {
     int newSocket = accept(sd, (struct sockaddr*)&clientIP, &addrlen);
 
-    return newSocket;
+    return ConnectedClient(newSocket, inet_ntoa(clientIP.sin_addr));
 }
 
 std::string Server::readMessage(int socket)
 {
+    
     int size = std::stoi( readLineFromSocket(socket) );
     if(size == 0)
         return "quit";
@@ -79,22 +84,28 @@ void Server::sendMessage(int socket, const std::string& message)
 }
 
 
-void Server::handleRequest(int socket)
+void Server::handleClient(ConnectedClient client)
 {
     assert(messageDb != nullptr);
     assert(messageHandler != nullptr);
+    assert(clientsManager != nullptr);
 
+    std::cout << "Client " + client.getIP() + " connected" << std::endl;
+
+    if(!clientsManager->exists(client.getIP())) 
+        clientsManager->addClient(client.getIP());
+    
     while(true)
     {
         try
         {
-            std::string request = this->readMessage(socket);
+            std::string request = this->readMessage(client.getSocket());
             std::string command = lower(readLine(request));
             std::string response;
 
             if (commands.find(command) == commands.end())
             {
-                sendMessage(socket, "unknown command");
+                sendMessage(client.getSocket(), "unknown command");
                 continue;
             }
 
@@ -104,7 +115,50 @@ void Server::handleRequest(int socket)
                 break;
             }
 
-            if (command == "send")
+            if(clientsManager->isBlocked(client.getIP()))
+            {
+                int remainingBlockTimeInSeconds = clientsManager->getRemainingBlockTime(client.getIP());
+                sendMessage(client.getSocket(), "You are blocked for another " + std::to_string(remainingBlockTimeInSeconds) + " seconds");
+                continue;
+            }
+
+            if(command != "login" && !client.isLoggedIn())
+            {
+                sendMessage(client.getSocket(), "Error, you need to be logged in to perform this action");
+                continue;
+            }
+
+            if(command == "login")
+            {
+                std::cout << "Received Login Request" << std::endl;
+
+                std::string username = readLine( request );
+                std::string password = readLine( request );
+
+                    //TODO: validate username and password 
+                    // bool success = LDAP.LOGIN(username, password) // client.loggedIn allready set to false, assume it was not successfull
+                bool success = false; // hard code failed attempt
+
+                if(!success)
+                {
+                    clientsManager->increaseFailedAttempts(client.getIP());
+                    response = "Invalid Credentials";
+
+                    int remainingAttempts = clientsManager->getRemainingAttempts(client.getIP());
+
+                    if(remainingAttempts > 0)
+                        response += ", remaining attempts: " + std::to_string(remainingAttempts);
+                    else
+                        response += ", you are not blocked for " + std::to_string( clientsManager->getRemainingBlockTime(client.getIP()) ) + " seconds";   
+                }
+                else
+                {
+                    clientsManager->resetFailedAttempts(client.getIP());
+                    client.startSession();
+                    response = "Logged in Successfully";
+                }      
+            }
+            else if (command == "send")
             {
                 std::cout << "Received Send Request" << std::endl;
                 response = messageHandler->HandleSendMessage(request);
@@ -124,17 +178,17 @@ void Server::handleRequest(int socket)
                 response = messageHandler->ListMessages( username );
             }
             
-            this->sendMessage(socket, response);
+            this->sendMessage( client.getSocket(), response );
         }
         catch(const MessageHandlerException& msgEx )
         {
             std::cout << msgEx.what() << std::endl;
-            this->sendMessage( socket, "ERROR: " + std::string(msgEx.what()) );
+            this->sendMessage( client.getSocket(), "ERROR: " + std::string(msgEx.what()) );
         }
         catch(const MessageRepositoryException& ex)
         {
             std::cout << ex.what() << std::endl;
-            this->sendMessage( socket, "ERROR: " + std::string(ex.what()) );
+            this->sendMessage( client.getSocket(), "ERROR: " + std::string(ex.what()) );
         }
         catch(const std::exception& e)
         {
@@ -146,7 +200,7 @@ void Server::handleRequest(int socket)
         }
     }
 
-    close(socket);
+    client.closeConnection();
 }
 
 

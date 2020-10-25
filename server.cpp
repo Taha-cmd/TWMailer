@@ -15,8 +15,6 @@
 #include <unistd.h>
 
 
-
-
 #include "ServerDependencies/server.class.h"
 #include "Infrastructure/LdapClient.h"
 
@@ -31,7 +29,7 @@ int main(int argc, char** argv)
 {
 
 
-    LdapClient LDAP(FH_LDAP_URI, FH_LDAP_SEARCHBASE);
+   /* LdapClient LDAP(FH_LDAP_URI, FH_LDAP_SEARCHBASE);
 
     try{
                 LDAP.connect();
@@ -47,9 +45,9 @@ int main(int argc, char** argv)
     catch(LdapClientException ex)
     {
         std::cout << ex.what() << std::endl;
-    }
+    }  */
 
-    /*if(argc != 3)
+    if(argc != 3)
         error_and_die("usage server <port> <mailpool>");
     
     Server server(AF_INET, SOCK_STREAM, 0, argv[2]);
@@ -64,12 +62,12 @@ int main(int argc, char** argv)
     std::cout << "listening on port " << argv[1] << std::endl;
     while(true)
     {
-        int newSocket = server.acceptClient();
-        if(newSocket > 0){
-            std::thread requestHandler(&Server::handleRequest, &server, newSocket);
+        ConnectedClient client = server.acceptClient();
+        if(client.getSocket() > 0){
+            std::thread requestHandler(&Server::handleClient, &server, client);
             requestHandler.detach();
         }         
-    }   */
+    }  
     
     exit(EXIT_SUCCESS);
 }

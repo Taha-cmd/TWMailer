@@ -12,6 +12,7 @@
 #include <cstring>
 #include <fcntl.h>
 #include <set>
+#include <map>
 #include <thread>
 #include <unistd.h>
 #include <sstream>
@@ -20,7 +21,8 @@
 #include "messageHandler.h"
 #include "../Database/messageRepository.h"
 #include "../Infrastructure/message.h"
-
+#include "ConnectedClient.h"
+#include "ClientsManager.h"
 
 
 // similar like client.class, this class abstracts the ugly c socket functions for the server side
@@ -36,11 +38,11 @@ class Server {
         void shutDown();
         
         void start(const std::string&, int);
-        int acceptClient();
+        ConnectedClient acceptClient();
         std::string readMessage(int);
         void sendMessage(int, const std::string&);
 
-        void handleRequest(int);
+        void handleClient(ConnectedClient client);
 
      private:
          bool listening;
@@ -56,6 +58,7 @@ class Server {
 
          MessageRepository* messageDb;
          MessageHandler* messageHandler;
+         ClientsManager* clientsManager;
 
-         std::set<std::string> commands = {"send", "read", "list", "delete", "quit"};
+         std::set<std::string> commands = {"login", "send", "read", "list", "delete", "quit"};
 };

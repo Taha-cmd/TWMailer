@@ -48,7 +48,18 @@ int main(int argc, char** argv)
         {
             std::string sendRequest;
 
-            if(lower(command) == "send")
+            if(  lower(command) == "login" )
+            {
+                std::string username, password;
+
+                reader.ReadLineParameter("Username", username, 8);
+                reader.ReadPassword(password, 24);
+
+                sendRequest = "LOGIN\n";
+                sendRequest += username + "\n";
+                sendRequest += password + "\n";
+            }
+            else if(lower(command) == "send")
             {
                 std::string sender, recipient, subject, message;
 
