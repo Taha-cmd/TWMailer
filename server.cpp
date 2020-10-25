@@ -14,7 +14,11 @@
 #include <thread>
 #include <unistd.h>
 
+
+
+
 #include "ServerDependencies/server.class.h"
+#include "Infrastructure/LdapClient.h"
 
 #define BACKLOG 5
 
@@ -25,7 +29,27 @@ void cleanUp(int placeholder, void* server)
 
 int main(int argc, char** argv)
 {
-    if(argc != 3)
+
+
+    LdapClient LDAP(FH_LDAP_URI, FH_LDAP_SEARCHBASE);
+
+    try{
+                LDAP.connect();
+    }
+    catch(LdapClientException ex)
+    {
+        std::cout << ex.what() << std::endl;
+    }
+
+    try{
+                LDAP.test();
+    }
+    catch(LdapClientException ex)
+    {
+        std::cout << ex.what() << std::endl;
+    }
+
+    /*if(argc != 3)
         error_and_die("usage server <port> <mailpool>");
     
     Server server(AF_INET, SOCK_STREAM, 0, argv[2]);
@@ -45,7 +69,7 @@ int main(int argc, char** argv)
             std::thread requestHandler(&Server::handleRequest, &server, newSocket);
             requestHandler.detach();
         }         
-    } 
+    }   */
     
     exit(EXIT_SUCCESS);
 }
