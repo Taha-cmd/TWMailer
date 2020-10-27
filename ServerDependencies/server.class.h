@@ -23,6 +23,8 @@
 #include "../Infrastructure/message.h"
 #include "ConnectedClient.h"
 #include "ClientsManager.h"
+#include "../Infrastructure/LdapClient.h"
+
 
 
 // similar like client.class, this class abstracts the ugly c socket functions for the server side
@@ -59,6 +61,7 @@ class Server {
          MessageRepository* messageDb;
          MessageHandler* messageHandler;
          ClientsManager* clientsManager;
+         LdapClient* LDAP;
 
          std::set<std::string> commands = {"login", "send", "read", "list", "delete", "quit"};
 };

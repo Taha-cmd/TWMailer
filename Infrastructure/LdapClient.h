@@ -12,7 +12,7 @@
 
 
 
-#define FH_LDAP_URI "ldap://ldap.technikum.wien.at:389"
+#define FH_LDAP_URI "ldap://ldap.technikum-wien.at:389"
 #define FH_LDAP_SEARCHBASE "dc=technikum-wien,dc=at"
 
 
@@ -24,11 +24,11 @@ class LdapClient
         ~LdapClient();
         
         void connect();
+        //bool userExists(const std::string& username);
+        bool authenticateUser(const std::string& username, const std::string& password);
 
         int getVersion() const { return version; }
-
-        void test();
-
+        bool isConnected() const { return connected; }
 
     private:
         std::string URI;
@@ -36,6 +36,8 @@ class LdapClient
 
         LDAP* handle;
         const int version;
+
+        bool connected;
 
 
 };

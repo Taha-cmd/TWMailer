@@ -14,6 +14,7 @@ Server::Server(int domain, int type, int protocol, const std::string& mailpool)
     messageDb = new MessageRepository(FileSystem(mailpool));
     messageHandler = new MessageHandler(*messageDb);
     clientsManager = new ClientsManager();
+    LDAP = new LdapClient(FH_LDAP_URI, FH_LDAP_SEARCHBASE);
 }
 
 Server::~Server()
@@ -31,6 +32,9 @@ void Server::shutDown()
 
     if(clientsManager != nullptr)
         delete clientsManager;
+
+    if(LDAP != nullptr)
+        delete LDAP;
         
     close(sd);
 }
@@ -49,14 +53,21 @@ void Server::start(const std::string& port, int backlog)
         error_and_die("error parsing port");
     }
         
-
     if( ( bind(sd, (struct sockaddr*)&serverIP, sizeof(serverIP)) ) != 0)
         error_and_die("error binding socket");
 
-    listen(sd, backlog);
-    listening = true;
+    if( listen(sd, backlog) == -1 )
+        error_and_die("error starting to listen to port");
 
+    listening = true;
     messageDb->Establish();
+
+    try{
+        LDAP->connect();
+    } catch (const LdapClientException& ex) {
+       error_and_die(ex.what()); 
+    }
+
 }
 
 ConnectedClient Server::acceptClient()
@@ -89,12 +100,15 @@ void Server::handleClient(ConnectedClient client)
     assert(messageDb != nullptr);
     assert(messageHandler != nullptr);
     assert(clientsManager != nullptr);
+    assert(LDAP != nullptr);
 
     std::cout << "Client " + client.getIP() + " connected" << std::endl;
 
     if(!clientsManager->exists(client.getIP())) 
         clientsManager->addClient(client.getIP());
-    
+
+    Session session;
+
     while(true)
     {
         try
@@ -111,7 +125,7 @@ void Server::handleClient(ConnectedClient client)
 
             if (command == "quit")
             {
-                std::cout << "client exited" << std::endl;
+                std::cout << "ending session for " + session.username << std::endl;
                 break;
             }
 
@@ -131,13 +145,18 @@ void Server::handleClient(ConnectedClient client)
             if(command == "login")
             {
                 std::cout << "Received Login Request" << std::endl;
+                
+                if(client.isLoggedIn())
+                {
+                    sendMessage(client.getSocket(), "You are allready logged in");
+                    continue;
+                }
 
                 std::string username = readLine( request );
                 std::string password = readLine( request );
 
-                    //TODO: validate username and password 
-                    // bool success = LDAP.LOGIN(username, password) // client.loggedIn allready set to false, assume it was not successfull
-                bool success = false; // hard code failed attempt
+                //TODO: validate username and password 
+                bool success = LDAP->authenticateUser(username, password);
 
                 if(!success)
                 {
@@ -155,6 +174,8 @@ void Server::handleClient(ConnectedClient client)
                 {
                     clientsManager->resetFailedAttempts(client.getIP());
                     client.startSession();
+                    session.username = username;
+                    std::cout << "Starting session for " + username << std::endl;
                     response = "Logged in Successfully";
                 }      
             }
@@ -166,28 +187,26 @@ void Server::handleClient(ConnectedClient client)
             else if (command == "read" || command == "delete")
             {
                 std::cout << "Received " << command << " Request" << std::endl;
-                std::string username = readLine( request );
                 std::string number = readLine( request );
-                response = command == "read" ?  messageHandler->ReadMessage(username, number)
-                                            : messageHandler->DeleteMessage(username,  number);     
+                response = command == "read" ?  messageHandler->ReadMessage(session.username, number)
+                                            : messageHandler->DeleteMessage(session.username, number);     
             }
             else if (command == "list")
             {
                 std::cout << "Received List Request" << std::endl;
-                std::string username = readLine( request );
-                response = messageHandler->ListMessages( username );
+                response = messageHandler->ListMessages( session.username );
             }
             
             this->sendMessage( client.getSocket(), response );
         }
         catch(const MessageHandlerException& msgEx )
         {
-            std::cout << msgEx.what() << std::endl;
+            std::cerr << msgEx.what() << std::endl;
             this->sendMessage( client.getSocket(), "ERROR: " + std::string(msgEx.what()) );
         }
         catch(const MessageRepositoryException& ex)
         {
-            std::cout << ex.what() << std::endl;
+            std::cerr << ex.what() << std::endl;
             this->sendMessage( client.getSocket(), "ERROR: " + std::string(ex.what()) );
         }
         catch(const std::exception& e)

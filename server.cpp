@@ -27,26 +27,6 @@ void cleanUp(int placeholder, void* server)
 
 int main(int argc, char** argv)
 {
-
-
-   /* LdapClient LDAP(FH_LDAP_URI, FH_LDAP_SEARCHBASE);
-
-    try{
-                LDAP.connect();
-    }
-    catch(LdapClientException ex)
-    {
-        std::cout << ex.what() << std::endl;
-    }
-
-    try{
-                LDAP.test();
-    }
-    catch(LdapClientException ex)
-    {
-        std::cout << ex.what() << std::endl;
-    }  */
-
     if(argc != 3)
         error_and_die("usage server <port> <mailpool>");
     
@@ -67,7 +47,7 @@ int main(int argc, char** argv)
             std::thread requestHandler(&Server::handleClient, &server, client);
             requestHandler.detach();
         }         
-    }  
+    }   
     
     exit(EXIT_SUCCESS);
 }
