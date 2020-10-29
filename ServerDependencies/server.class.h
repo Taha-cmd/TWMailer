@@ -55,7 +55,6 @@ class Server {
          int protocol;
 
          struct sockaddr_in serverIP;
-         struct sockaddr_in clientIP;
          socklen_t addrlen;
 
          MessageRepository* messageDb;

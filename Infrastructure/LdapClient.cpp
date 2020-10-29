@@ -36,6 +36,12 @@ void LdapClient::connect()
 
 bool LdapClient::authenticateUser(const std::string& username, const std::string& password)
 {
+    if(username.empty() || password.empty())
+        throw LdapClientException("Error: username and password cannot be empty");
+
+    if(username.length() > MAX_USERNAME_LENGTH)
+        throw LdapClientException("Error: username length cannot exceed " + std::to_string(MAX_USERNAME_LENGTH));
+
     BerValue cred;
     cred.bv_val = (char*) password.data();
     cred.bv_len = password.length();

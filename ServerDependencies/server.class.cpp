@@ -3,13 +3,12 @@
 
 
 Server::Server(int domain, int type, int protocol, const std::string& mailpool)
-    :listening(false), sd(-1), domain(domain), type(type), protocol(protocol), addrlen(sizeof(struct sockaddr_in))
+    :listening(false), sd(-1), domain(domain), type(type), protocol(protocol)
 {
     if ( (sd = socket(domain, type, protocol)) < 0)
         error_and_die("error creating socket");
 
     memset( &serverIP, 0, sizeof(serverIP) );
-    memset( &clientIP, 0, sizeof(clientIP) );
 
     messageDb = new MessageRepository(FileSystem(mailpool));
     messageHandler = new MessageHandler(*messageDb);
@@ -72,6 +71,10 @@ void Server::start(const std::string& port, int backlog)
 
 ConnectedClient Server::acceptClient()
 {
+    struct sockaddr_in clientIP;
+    memset( &clientIP, 0, sizeof(clientIP) );
+
+    socklen_t addrlen = sizeof(struct sockaddr_in);
     int newSocket = accept(sd, (struct sockaddr*)&clientIP, &addrlen);
 
     return ConnectedClient(newSocket, inet_ntoa(clientIP.sin_addr));
@@ -154,9 +157,19 @@ void Server::handleClient(ConnectedClient client)
 
                 std::string username = readLine( request );
                 std::string password = readLine( request );
+                bool success;
 
-                //TODO: validate username and password 
-                bool success = LDAP->authenticateUser(username, password);
+                try
+                {
+                    success = LDAP->authenticateUser(username, password);
+                } 
+                catch(const LdapClientException& ex) 
+                {
+                    std::cerr << ex.what() << std::endl;
+                    sendMessage(client.getSocket(), ex.what());
+                    continue;
+                } 
+                
 
                 if(!success)
                 {
@@ -205,6 +218,11 @@ void Server::handleClient(ConnectedClient client)
             this->sendMessage( client.getSocket(), "ERROR: " + std::string(msgEx.what()) );
         }
         catch(const MessageRepositoryException& ex)
+        {
+            std::cerr << ex.what() << std::endl;
+            this->sendMessage( client.getSocket(), "ERROR: " + std::string(ex.what()) );
+        }
+        catch(const LdapClientException& ex)
         {
             std::cerr << ex.what() << std::endl;
             this->sendMessage( client.getSocket(), "ERROR: " + std::string(ex.what()) );

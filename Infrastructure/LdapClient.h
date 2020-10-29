@@ -15,6 +15,8 @@
 #define FH_LDAP_URI "ldap://ldap.technikum-wien.at:389"
 #define FH_LDAP_SEARCHBASE "dc=technikum-wien,dc=at"
 
+#define MAX_USERNAME_LENGTH 8
+
 
 class LdapClient
 {

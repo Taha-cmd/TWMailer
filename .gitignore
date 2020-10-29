@@ -2,5 +2,3 @@
 .vscode/
 .vscode/*
 MessageDatabase/
-client
-server
