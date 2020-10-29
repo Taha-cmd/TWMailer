@@ -14,7 +14,9 @@
 #include <thread>
 #include <unistd.h>
 
+
 #include "ServerDependencies/server.class.h"
+#include "Infrastructure/LdapClient.h"
 
 #define BACKLOG 5
 
@@ -40,12 +42,12 @@ int main(int argc, char** argv)
     std::cout << "listening on port " << argv[1] << std::endl;
     while(true)
     {
-        int newSocket = server.acceptClient();
-        if(newSocket > 0){
-            std::thread requestHandler(&Server::handleRequest, &server, newSocket);
+        ConnectedClient client = server.acceptClient();
+        if(client.getSocket() > 0){
+            std::thread requestHandler(&Server::handleClient, &server, client);
             requestHandler.detach();
         }         
-    } 
+    }   
     
     exit(EXIT_SUCCESS);
 }

@@ -2,7 +2,7 @@
 
 
 Client::Client(int domain, int type, int protocol)
-    :connected(false), sd(-1), domain(domain), type(type), protocol(protocol)
+    :connected(false), loggedIn(false), sd(-1), domain(domain), type(type), protocol(protocol)
 {
     if ( (sd = socket(domain, type, protocol)) < 0)
         error_and_die("error creating socket");
@@ -68,7 +68,7 @@ void Client::sendMessage(const std::string& message)
 
 void Client::printHelp() const
 {
-    std::cout << "commands { send, list, read, delete }" << std::endl;
+    std::cout << "commands { login, send, list, read, delete }" << std::endl;
     std::cout << "enter 'quit' to exit the program" << std::endl;
     std::cout << "enter 'help' to display this menu" << std::endl;
 }

@@ -23,7 +23,6 @@ int main(int argc, char** argv)
     if(argc != 3)
         error_and_die("usage: client <ip4> <port>");
 
-
     Client client(AF_INET, SOCK_STREAM, 0);
     
     signal(SIGINT, exitProgram);
@@ -39,6 +38,9 @@ int main(int argc, char** argv)
 
     ConfigReader reader(std::cin);
 
+    Session session;
+    session.username = "anonymous";
+
     while(true)
     {
         std::cout << "enter a command: ";
@@ -48,38 +50,51 @@ int main(int argc, char** argv)
         {
             std::string sendRequest;
 
-            if(lower(command) == "send")
+            if(  lower(command) == "login" )
             {
-                std::string sender, recipient, subject, message;
+                std::string username, password;
 
-                reader.ReadLineParameter("Sender", sender, 8);
+                reader.ReadLineParameter("Username", username, 8);
+                reader.ReadPassword(password, 24);
+
+                sendRequest = "LOGIN\n";
+                sendRequest += username + "\n";
+                sendRequest += password + "\n";
+
+                client.sendMessage(sendRequest);
+                std::string response = client.readMessage();
+                std::cout << response << std::endl;
+
+                if(response == "Logged in Successfully")
+                    session.username = username;
+
+                continue;
+            }
+            else if( lower(command) == "send" )
+            {
+                std::string recipient, subject, message;
+
                 reader.ReadLineParameter("Empfänger", recipient, 8);
                 reader.ReadLineParameter("Betreff", subject, 80);
                 reader.ReadTextParameter("Nachricht", message, 10000);
 
-                Message msg(sender, recipient, subject, message);
+                std::cout << session.username << std::endl;
+                                std::cout << session.username.length() << std::endl;
+                Message msg(session.username, recipient, subject, message);
                 sendRequest = "SEND\n";
                 sendRequest += msg.ToNetworkString();
             }
             else if( lower(command) == "list" )
             {
-                std::string username;
-
-                reader.ReadLineParameter("Username", username, 8);
-
                 sendRequest = "LIST\n";
-                sendRequest += username;
-
             }
             else if(  lower(command) == "read" || lower(command) == "delete" )
             {
-                std::string username, number;
+                std::string number;
 
-                reader.ReadLineParameter("Username", username, 8);
                 reader.ReadLineParameter("Message number", number, 8);
 
                 sendRequest = lower(command) == "read" ? "READ\n" : "DELETE\n";
-                sendRequest += username + "\n";
                 sendRequest += number + "\n";
             }
             else if ( lower(command) == "help" )

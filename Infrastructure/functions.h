@@ -22,6 +22,8 @@ int sendNBytes(int,const std::string&,int);  // send exactly n bytes to a socket
 void exitProgram(int);  // signals route to a normal exit
 std::time_t getCurrentTime();  // I'll let you figure this one out
 
-
+struct Session {
+   std::string username;
+};
 
 #endif

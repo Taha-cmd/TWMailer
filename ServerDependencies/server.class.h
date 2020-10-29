@@ -12,6 +12,7 @@
 #include <cstring>
 #include <fcntl.h>
 #include <set>
+#include <map>
 #include <thread>
 #include <unistd.h>
 #include <sstream>
@@ -20,6 +21,9 @@
 #include "messageHandler.h"
 #include "../Database/messageRepository.h"
 #include "../Infrastructure/message.h"
+#include "ConnectedClient.h"
+#include "ClientsManager.h"
+#include "../Infrastructure/LdapClient.h"
 
 
 
@@ -36,11 +40,11 @@ class Server {
         void shutDown();
         
         void start(const std::string&, int);
-        int acceptClient();
+        ConnectedClient acceptClient();
         std::string readMessage(int);
         void sendMessage(int, const std::string&);
 
-        void handleRequest(int);
+        void handleClient(ConnectedClient client);
 
      private:
          bool listening;
@@ -51,11 +55,12 @@ class Server {
          int protocol;
 
          struct sockaddr_in serverIP;
-         struct sockaddr_in clientIP;
          socklen_t addrlen;
 
          MessageRepository* messageDb;
          MessageHandler* messageHandler;
+         ClientsManager* clientsManager;
+         LdapClient* LDAP;
 
-         std::set<std::string> commands = {"send", "read", "list", "delete", "quit"};
+         std::set<std::string> commands = {"login", "send", "read", "list", "delete", "quit"};
 };

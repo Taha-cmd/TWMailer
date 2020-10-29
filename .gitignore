@@ -1,5 +1,4 @@
 *.o
-obj
 .vscode/
 .vscode/*
 MessageDatabase/
